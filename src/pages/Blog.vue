@@ -1,17 +1,64 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// Mock data for now, later fetch from store/API
-const posts = ref([
-  { id: '1', title: 'Hello World', date: '2023-10-01', summary: 'My first post.' },
-  { id: '2', title: 'Vue 3 Tips', date: '2023-10-05', summary: 'Some useful tips for Vue 3 development.' }
-])
+type PostMeta = {
+  slug: string
+  title: string
+  summary: string
+}
 
-const goToPost = (id: string) => {
-  router.push(`/blog/${id}`)
+const posts = ref<PostMeta[]>([])
+
+const postLoaders = import.meta.glob('../../posts/*.md', { as: 'raw' }) as Record<
+  string,
+  () => Promise<string>
+>
+
+const getBasename = (filePath: string) => {
+  const parts = filePath.split(/[\\/]/)
+  const fileName = parts[parts.length - 1] ?? ''
+  return fileName.replace(/\.md$/i, '')
+}
+
+const extractSummary = (markdown: string) => {
+  const noCode = markdown.replace(/```[\s\S]*?```/g, '')
+  const lines = noCode.split(/\r?\n/)
+  for (const line of lines) {
+    const text = line.trim()
+    if (!text) continue
+    if (text.startsWith('#')) continue
+    if (text.startsWith('>')) continue
+    if (text.startsWith('-')) continue
+    if (text.startsWith('*')) continue
+    if (/^\d+\./.test(text)) continue
+    return text.slice(0, 120)
+  }
+  return ''
+}
+
+onMounted(async () => {
+  const entries = Object.entries(postLoaders)
+    .map(([filePath, loader]) => ({ slug: getBasename(filePath), loader }))
+    .sort((a, b) => a.slug.localeCompare(b.slug, 'zh-Hans-CN'))
+
+  posts.value = await Promise.all(
+    entries.map(async ({ slug, loader }) => {
+      const markdown = await loader()
+      const summary = extractSummary(markdown)
+      return {
+        slug,
+        title: slug,
+        summary,
+      }
+    })
+  )
+})
+
+const goToPost = (slug: string) => {
+  router.push(`/blog/${encodeURIComponent(slug)}`)
 }
 </script>
 
@@ -19,11 +66,10 @@ const goToPost = (id: string) => {
   <div class="blog-container">
     <h2>Latest Articles</h2>
     <div class="post-list">
-      <el-card v-for="post in posts" :key="post.id" class="post-card" shadow="hover" @click="goToPost(post.id)">
+      <el-card v-for="post in posts" :key="post.slug" class="post-card" shadow="hover" @click="goToPost(post.slug)">
         <template #header>
           <div class="card-header">
             <span>{{ post.title }}</span>
-            <span class="date">{{ post.date }}</span>
           </div>
         </template>
         <div class="summary">{{ post.summary }}</div>

@@ -6,6 +6,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
 import './styles/global.less'
+import './styles/markdownTheme/chocolate.less'
 
 const app = createApp(App)
 console.log(1);
