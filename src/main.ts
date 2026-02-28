@@ -8,6 +8,7 @@ import router from './router'
 import './styles/global.less'
 
 const app = createApp(App)
+console.log(1);
 
 app.use(createPinia())
 app.use(router)
