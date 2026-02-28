@@ -29,7 +29,6 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
-    "@esbuild/win32-x64": "^0.18.20",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.19.13",
     "@typescript-eslint/eslint-plugin": "^7.0.1",

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, shallowRef, watch } from 'vue';
-// import { createStore } from '@/store/app';
 import { fabric } from "fabric-with-gestures";
 import { calculateIntersection } from './utils/utils'
 import { normalizeColorWithHalfOpacity, drawBaseShape, listIcons, paperCutPath, bastPath, drawNormal } from './libs/config';
@@ -8,8 +7,6 @@ import { addIconMouseDown, addIconMouseMove, addIconMouseUp, cutting } from './l
 
 const currentTool = ref<'scissors' | 'pen' | 'eraser' | 'shapes' | ''>('scissors');
 const shapeMode = ref<'normal' | 'symmetry' | 'fourCorners' | 'sixCorners' | 'fiveCorners'>('normal')
-// const store = inject('store') as ReturnType<ReturnType<typeof createStore>>;
-// const widgetInstance = inject('widgetInstance') as any;
 const paperColor = ref("rgba(165, 27, 42, 1)");
 const brushColor = ref("rgba(165, 27, 42, 1)");
 const paperMode = ["symmetry","fourCorners","sixCorners","fiveCorners"];
@@ -34,7 +31,6 @@ let startPoint;
 let dynamicLine;
 let scissorsPaths: fabric.Path[] = [];
 let brushPaths: fabric.Path[] = [];
-let eraserPaths: fabric.Path[] = [];
 let undoStack: any[] = [];
 let redoStack: any[] = [];
 let trianglePath1, trianglePath2;
@@ -211,7 +207,7 @@ function addEventListeners() {
       })
     }
   });
-  fabricCanvas.value.on("mouse:up", (opt) => {
+  fabricCanvas.value.on("mouse:up", () => {
     if (currentTool.value == 'shapes') {
       addIconMouseUp(fabricCanvas.value, currentShapeType.value, setShapeType, saveState, shapeMode.value, scissorsPaths, isCutting)
 
@@ -264,7 +260,7 @@ function setShapeMode(mode: 'normal' | 'symmetry' | 'fourCorners' | 'sixCorners'
     scissorsPaths = []
     brushPaths = []
     saveState({ type: mode + 'Mode' })
-  };
+  }
 }
 
 function normalMode() {
@@ -674,7 +670,7 @@ function drawPathAndDashLine(newPaths, axesIndex, lineIndex) {
         currentPaths = data1;
         other = data2;
       }
-      currentPaths.forEach((p, j) => {
+      currentPaths.forEach((p) => {
         const mirrored = mirrorPathByAxis(p, axis);
         nextPaths.push(mirrored);
       });
@@ -693,7 +689,7 @@ function drawPathAndDashLine(newPaths, axesIndex, lineIndex) {
         currentPaths = data1;
         other = data2;
       }
-      currentPaths1.forEach((p, j) => {
+      currentPaths1.forEach((p) => {
         const mirrored = mirrorPathByAxis(p, axis);
         nextPaths.push(mirrored);
       });
@@ -858,7 +854,7 @@ async function expandAnimation(newPaths, axes, flag = true) {
       axes.forEach((axis, k) => {
         if (k <= i) {
           const nextPaths: fabric.Path[] = [];
-          currentPaths.forEach((p, j) => {
+          currentPaths.forEach((p) => {
             const mirrored = mirrorPathByAxis(p, axis);
             nextPaths.push(mirrored);
           });
@@ -869,7 +865,7 @@ async function expandAnimation(newPaths, axes, flag = true) {
         }
         if (k <= i) {
           const nextPaths: fabric.Path[] = [];
-          currentPaths1.forEach((p, j) => {
+          currentPaths1.forEach((p) => {
             const mirrored = mirrorPathByAxis(p, axis);
             nextPaths.push(mirrored);
           });
@@ -991,7 +987,7 @@ function drawReflected(canvas, mode, axes, newPaths) {
       currentPaths = data1;
       other = data2;
     }
-    currentPaths.forEach((p, j) => {
+    currentPaths.forEach((p) => {
       const mirrored = mirrorPathByAxis(p, axis);
       nextPaths.push(mirrored);
     });
@@ -1177,9 +1173,9 @@ function handleHoverChange(hover) {
           @visibleChange="handleHoverChange">
           <template #content>
             <div class="box-shape">
-              <div class="img-icon" :class="currentShapeType == value.type ? 'active' : ''" v-for="value in iconLists"
+              <div class="img-icon" :class="currentShapeType == value.type ? 'active' : ''" v-for="value in iconLists" :key="value.type"
                 :style="{ width: value.type === 'rectangle' ? '56px' : '41px' }" @click="setShapeType(value.type)">
-                <img :src="`${store.fullPath}${value.url}`"
+                <img :src="value.url"
                   :style="{ width: value.type === 'rectangle' ? '55px' : '40px' }" :alt="value.type">
               </div>
             </div>

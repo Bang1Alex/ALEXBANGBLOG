@@ -17,7 +17,9 @@ const md = new MarkdownIt({
     if (lang && hljs.getLanguage(lang)) {
       try {
         return hljs.highlight(str, { language: lang }).value
-      } catch (__) {}
+      } catch {
+        return ''
+      }
     }
     return '' // use external default escaping
   }
