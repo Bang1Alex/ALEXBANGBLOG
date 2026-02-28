@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fabric.js 三角形沿线段AB翻折动画（修复负坐标）</title>
+  <script src="https://cdn.jsdelivr.net/npm/fabric@5.4.0/dist/fabric.min.js"></script>
+  <style>
+    canvas { border: 1px solid #ccc; display:block; margin:10px auto; }
+    #controls { text-align:center; margin-top:10px; }
+    button { padding:6px 14px; }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="800" height="600"></canvas>
+  <div id="controls">
+    <button id="foldBtn">▶ 沿 AB 折叠动画</button>
+  </div>
+
+<script>
+const canvas = new fabric.Canvas("c");
+
+// 折线 A、B
+const A = { x: 200, y:  196.41016 };
+const B = { x: 400, y: 250 };
+
+// 示例路径（包含可能的负值）
+const pathData = `M  200 196.41016  326.794919 -23.205080 L 400 250 Z`;
+const p1 = "M 304.55 91.95 304.43 91.75 L 304.43 91.75 L 304.31 91.55 L 304.20 91.34 L 304.08 91.14 L 303.97 90.93 L 303.85 90.73 L 303.74 90.52 L 303.63 90.31 L 303.52 90.10 L 303.41 89.90 L 303.29 89.69 L 303.18 89.47 L 303.07 89.26 L 302.96 89.05 L 302.85 88.84 L 302.75 88.62 L 302.64 88.41 L 302.53 88.19 L 302.42 87.98 L 302.32 87.76 L 302.21 87.54 L 302.10 87.32 L 302.00 87.10 L 301.90 86.88 L 301.79 86.66 L 301.69 86.44 L 301.58 86.22 L 301.48 85.99 L 301.38 85.77 L 301.28 85.55 L 301.18 85.32 L 301.08 85.09 L 300.98 84.87 L 300.88 84.64 L 300.78 84.41 L 300.68 84.18 L 300.58 83.95 L 300.49 83.72 L 300.39 83.49 L 300.29 83.25 L 300.20 83.02 L 300.11 82.79 L 300.02 82.55 L 299.93 82.31 L 299.85 82.07 L 299.77 81.83 L 299.69 81.58 L 299.62 81.34 L 299.54 81.09 L 299.48 80.84 L 299.41 80.59 L 299.35 80.34 L 299.29 80.08 L 299.23 79.83 L 299.18 79.57 L 299.13 79.31 L 299.08 79.05 L 299.03 78.79 L 298.99 78.53 L 298.95 78.26 L 298.91 77.99 L 298.88 77.72 L 298.85 77.45 L 298.82 77.18 L 298.79 76.91 L 298.77 76.63 L 298.75 76.36 L 298.73 76.08 L 298.72 75.80 L 298.71 75.51 L 298.70 75.23 L 298.70 74.94 L 298.69 74.66 L 298.70 74.37 L 298.70 74.08 L 298.71 73.79 L 298.71 73.49 L 298.73 73.20 L 298.74 72.90 L 298.76 72.60 L 298.78 72.30 L 298.80 72.00 L 298.83 71.70 L 298.86 71.40 L 298.89 71.09 L 298.93 70.79 L 298.97 70.49 L 299.01 70.18 L 299.05 69.87 L 299.10 69.57 L 299.15 69.26 L 299.20 68.95 L 299.26 68.64 L 299.32 68.33 L 299.38 68.02 L 299.45 67.71 L 299.51 67.40 L 299.59 67.09 L 299.66 66.77 L 299.74 66.46 L 299.82 66.15 L 299.90 65.83 L 299.98 65.51 L 300.07 65.20 L 300.16 64.88 L 300.26 64.56 L 300.36 64.24 L 300.46 63.92 L 300.56 63.60 L 300.67 63.28 L 300.77 62.96 L 300.89 62.63 L 301.00 62.31 L 301.12 61.99 L 301.24 61.66 L 301.36 61.34 L 301.49 61.01 L 301.62 60.68 L 301.75 60.35 L 301.89 60.02 L 302.02 59.70 L 302.16 59.38 L 302.28 59.07 L 302.41 58.77 L 302.53 58.48 L 302.65 58.20 L 302.76 57.92 L 302.88 57.65 L 302.98 57.40 L 303.09 57.14 L 303.19 56.90 L 303.29 56.67 L 303.38 56.44 L 303.47 56.22 L 303.56 56.01 L 303.64 55.81 L 303.72 55.62 L 303.80 55.43 L 303.88 55.26 L 303.95 55.09 L 304.01 54.93 L 304.08 54.77 L 304.14 54.63 L 304.19 54.49 L 304.25 54.37 L 304.30 54.25 L 304.34 54.14 L 304.38 54.03 L 304.42 53.94 L 304.46 53.85 L 304.49 53.77 L 304.52 53.70 L 304.55 53.64 L 304.57 53.59 L 304.59 53.54 L 304.60 53.51 L 304.62 53.48 L 304.62 53.46 L 304.63 53.44 L 304.63 53.44 L 335.65 97.84 L 335.08 98.17 L 335.05 98.19 L 335.01 98.21 L 334.98 98.22 L 334.95 98.24 L 334.91 98.26 L 334.88 98.27 L 334.84 98.29 L 334.80 98.30 L 334.75 98.32 L 334.71 98.34 L 334.67 98.35 L 334.62 98.37 L 334.57 98.38 L 334.52 98.40 L 334.47 98.41 L 334.42 98.43 L 334.37 98.44 L 334.31 98.46 L 334.26 98.47 L 334.20 98.49 L 334.14 98.50 L 334.08 98.52 L 334.01 98.53 L 333.95 98.55 L 333.89 98.56 L 333.82 98.57 L 333.75 98.59 L 333.68 98.60 L 333.61 98.62 L 333.53 98.63 L 333.46 98.64 L 333.38 98.66 L 333.31 98.67 L 333.23 98.69 L 333.15 98.70 L 333.06 98.71 L 332.98 98.72 L 332.90 98.74 L 332.81 98.75 L 332.72 98.76 L 332.63 98.78 L 332.54 98.79 L 332.45 98.81 L 332.35 98.82 L 332.25 98.84 L 332.15 98.85 L 332.05 98.87 L 331.95 98.89 L 331.84 98.91 L 331.73 98.93 L 331.62 98.95 L 331.51 98.97 L 331.40 98.99 L 331.28 99.01 L 331.16 99.03 L 331.04 99.06 L 330.92 99.08 L 330.80 99.10 L 330.67 99.13 L 330.54 99.16 L 330.41 99.18 L 330.28 99.21 L 330.15 99.24 L 330.01 99.27 L 329.87 99.30 L 329.73 99.33 L 329.59 99.36 L 329.45 99.39 L 329.30 99.42 L 329.15 99.45 L 329.00 99.49 L 328.85 99.52 L 328.70 99.56 L 328.54 99.59 L 328.38 99.63 L 328.22 99.67 L 328.06 99.70 L 327.89 99.74 L 327.73 99.78 L 327.56 99.82 L 327.39 99.86 L 327.22 99.90 L 327.04 99.94 L 326.87 99.97 L 326.69 100.01 L 326.52 100.04 L 326.34 100.08 L 326.16 100.11 L 325.97 100.14 L 325.79 100.17 L 325.60 100.20 L 325.42 100.23 L 325.23 100.25 L 325.04 100.28 L 324.85 100.31 L 324.65 100.33 L 324.46 100.35 L 324.26 100.38 L 324.06 100.40 L 323.86 100.42 L 323.66 100.44 L 323.46 100.45 L 323.25 100.47 L 323.05 100.49 L 322.84 100.50 L 322.63 100.52 L 322.42 100.53 L 322.21 100.54 L 322.00 100.55 L 321.78 100.56 L 321.56 100.57 L 321.35 100.58 L 321.13 100.58 L 320.91 100.59 L 320.68 100.59 L 320.46 100.60 L 320.23 100.60 L 320.00 100.60 L 319.77 100.60 L 319.54 100.60 L 319.31 100.60 L 319.09 100.60 L 318.86 100.60 L 318.65 100.60 L 318.43 100.60 L 318.22 100.60 L 318.01 100.59 L 317.80 100.59 L 317.60 100.59 L 317.40 100.59 L 317.20 100.59 L 317.01 100.59 L 316.82 100.59 L 316.63 100.59 L 316.45 100.59 L 316.27 100.58 L 316.09 100.58 L 315.92 100.58 L 315.75 100.58 L 315.59 100.58 L 315.42 100.58 L 315.26 100.58 L 315.11 100.58 L 314.96 100.57 L 314.81 100.57 L 314.66 100.57 L 314.52 100.57 L 314.38 100.57 L 314.24 100.57 L 314.11 100.57 L 313.98 100.56 L 313.86 100.56 L 313.73 100.56 L 313.62 100.56 L 313.50 100.56 L 313.39 100.56 L 313.28 100.56 L 313.17 100.55 L 313.07 100.55 L 312.97 100.55 L 312.87 100.55 L 312.78 100.54 L 312.68 100.53 L 312.58 100.52 L 312.48 100.51 L 312.39 100.49 L 312.29 100.47 L 312.19 100.45 L 312.09 100.42 L 311.99 100.39 L 311.89 100.36 L 311.79 100.33 L 311.70 100.29 L 311.60 100.25 L 311.50 100.21 L 311.40 100.17 L 311.30 100.12 L 311.20 100.07 L 311.10 100.02 L 311.00 99.96 L 310.90 99.90 L 310.79 99.84 L 310.69 99.78 L 310.59 99.71 L 310.49 99.64 L 310.39 99.57 L 310.29 99.49 L 310.19 99.41 L 310.08 99.33 L 309.98 99.25 L 309.88 99.16 L 309.78 99.07 L 309.68 98.98 L 309.57 98.88 L 309.47 98.79 L 309.37 98.69 L 309.26 98.58 L 309.16 98.48 L 309.06 98.37 L 308.95 98.26 L 308.85 98.14 L 308.74 98.02 L 308.64 97.91 L 308.54 97.78 L 308.43 97.66 L 308.32 97.54 L 308.22 97.41 L 308.11 97.28 L 308.01 97.15 L 307.90 97.01 L 307.79 96.88 L 307.68 96.74 L 307.58 96.60 L 307.47 96.45 L 307.36 96.31 L 307.25 96.16 L 307.14 96.01 L 307.03 95.86 L 306.92 95.70 L 306.81 95.55 L 306.70 95.39 L 306.59 95.23 L 306.48 95.07 L 306.37 94.90 L 306.26 94.73 L 306.15 94.56 L 306.03 94.39 L 305.92 94.22 L 305.81 94.04 L 305.70 93.86 L 305.58 93.68 L 305.47 93.50 L 305.35 93.31 L 305.24 93.13 L 305.12 92.94 L 305.01 92.74 L 304.89 92.55 L 304.78 92.35 L 304.66 92.15 L 304.55 91.95 Z Z";
+
+// 创建原始三角形（两个图层以便对比）
+const triangle1 = new fabric.Path(pathData, {
+  fill: "rgba(0,0,255,0.3)",
+  stroke: "deeppink",
+  strokeWidth: 1.5,
+  objectCaching: false,  
+  selectable: false,
+});
+const triangle11 = new fabric.Path(pathData, {
+  fill: "rgba(0,0,255,0.15)",
+  stroke: "transparent",
+  strokeWidth: 1.5,
+  objectCaching: false,  
+  selectable: false,
+});
+canvas.add(triangle11);
+canvas.add(triangle1);
+
+const triangle2 = new fabric.Path(p1, {
+  fill: "rgba(0,0,255,0.3)",
+  stroke: "deeppink",
+  strokeWidth: 1.5,
+  objectCaching: false,  
+  selectable: false
+});
+const triangle22 = new fabric.Path(p1, {
+  fill: "rgba(0,0,255,0.15)",
+  stroke: "transparent",
+  strokeWidth: 1.5,
+  objectCaching: false,  
+  selectable: false
+});
+canvas.add(triangle2);
+canvas.add(triangle22);
+
+// 折线 AB（红虚线）
+const lineAB = new fabric.Line([A.x, A.y, B.x, B.y], {
+  stroke: 'red',
+  strokeWidth: 2,
+  strokeDashArray: [5, 5],
+  selectable: false
+});
+canvas.add(lineAB);
+
+// 按照折线坐标系旋转点（注意：这里用的是将关于 AB 的垂直方向缩放 cos(angle) 实现‘沿线折叠’的视觉）
+// 若需要更真实的三维折叠可改用旋转+透视投影，这里保持原思路，仅保证点匹配与坐标解析正确。
+function rotatePointAroundLine(px, py, A, B, angle) {
+  const dx = B.x - A.x, dy = B.y - A.y;
+  const len = Math.sqrt(dx*dx + dy*dy);
+  if (len === 0) return { x: px, y: py };
+  const ux = dx / len, uy = dy / len; // 单位切向量
+  const vx = -uy, vy = ux;            // 单位法向量（顺时针90度）
+  const relx = px - A.x, rely = py - A.y;
+  const tx = relx * ux + rely * uy; // 在切向量上的投影（保持不变）
+  const ty = relx * vx + rely * vy; // 在法向量上的投影（沿法向量缩放）
+  const new_tx = tx;
+  const new_ty = ty * Math.cos(angle); // 用 cos 模拟折叠（0->1）
+  const rx = A.x + new_tx * ux + new_ty * vx;
+  const ry = A.y + new_tx * uy + new_ty * vy;
+  return { x: rx, y: ry };
+}
+
+// 更健壮的路径解析：M/L 后可以跟多组坐标（把第一组当 M，之后当 L）；支持 Q 和 Z
+function parsePathPoints(pathStr) {
+  // 匹配字母命令及其后面的所有非命令字符
+  const regex = /([MLQZmlqz])([^MLQZmlqz]*)/g;
+  const result = [];
+  let match;
+  while ((match = regex.exec(pathStr))) {
+    const cmdRaw = match[1];
+    const cmd = cmdRaw.toUpperCase();
+    const nums = match[2].trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+    if (cmd === 'M' || cmd === 'L') {
+      // M 或 L 后可能有多对坐标：第一对若 cmd=M 则为 M，否则为 L；其余都按 L 处理
+      for (let i = 0; i < nums.length; i += 2) {
+        const x = nums[i], y = nums[i+1];
+        if (typeof x === 'undefined' || typeof y === 'undefined') break;
+        const thisCmd = (i === 0) ? cmd : 'L';
+        result.push({ cmd: thisCmd, points: [{ x, y }] });
+      }
+    } else if (cmd === 'Q') {
+      // Q 后应该是一组控制点+终点，可以出现多组（每组4个数）
+      for (let i = 0; i + 3 < nums.length; i += 4) {
+        result.push({
+          cmd: 'Q',
+          points: [
+            { x: nums[i], y: nums[i+1] }, // 控制点
+            { x: nums[i+2], y: nums[i+3] } // 终点
+          ]
+        });
+      }
+    } else if (cmd === 'Z') {
+      result.push({ cmd: 'Z' });
+    } else {
+      // 若遇到其它命令（如 C 等），此处可以扩展；当前样本只需要 M,L,Q,Z
+      // 忽略或跳过未知命令
+    }
+  }
+  return result;
+}
+
+// 折叠动画
+document.getElementById('foldBtn').onclick = () => {
+  const segments = parsePathPoints(pathData);
+  const segments1 = parsePathPoints(p1);
+  let progress = 0;
+  const duration = 1200;
+  const start = performance.now();
+
+  function animateFold(now) {
+    progress = Math.min((now - start) / duration, 1);
+    const angle = Math.PI * progress; // 0 -> PI
+    let newPath = "";
+    let newPath1 = "";
+
+    segments.forEach(seg => {
+      if (seg.cmd === 'M' || seg.cmd === 'L') {
+        const p = seg.points[0];
+        const np = rotatePointAroundLine(p.x, p.y, A, B, angle);
+        newPath += `${seg.cmd} ${np.x} ${np.y} `;
+      } else if (seg.cmd === 'Q') {
+        const cp = seg.points[0];
+        const ep = seg.points[1];
+        const ncp = rotatePointAroundLine(cp.x, cp.y, A, B, angle);
+        const nep = rotatePointAroundLine(ep.x, ep.y, A, B, angle);
+        newPath += `Q ${ncp.x} ${ncp.y} ${nep.x} ${nep.y} `;
+      } else if (seg.cmd === 'Z') {
+        newPath += "Z ";
+      }
+    });
+
+    segments1.forEach(seg => {
+      if (seg.cmd === 'M' || seg.cmd === 'L') {
+        const p = seg.points[0];
+        const np = rotatePointAroundLine(p.x, p.y, A, B, angle);
+        newPath1 += `${seg.cmd} ${np.x} ${np.y} `;
+      } else if (seg.cmd === 'Q') {
+        const cp = seg.points[0];
+        const ep = seg.points[1];
+        const ncp = rotatePointAroundLine(cp.x, cp.y, A, B, angle);
+        const nep = rotatePointAroundLine(ep.x, ep.y, A, B, angle);
+        newPath1 += `Q ${ncp.x} ${ncp.y} ${nep.x} ${nep.y} `;
+      } else if (seg.cmd === 'Z') {
+        newPath1 += "Z ";
+      }
+    });
+
+    // 更新 fabric.Path 的 path（fabric.Path 需要 path 数组，因此用 new fabric.Path(str).path）
+    try {
+      triangle1.set({ path: new fabric.Path(newPath).path });
+      triangle2.set({ path: new fabric.Path(newPath1).path });
+    } catch (e) {
+      // 若生成路径出错，打印以便调试
+      console.error("生成路径失败：", e, newPath, newPath1);
+    }
+
+    canvas.renderAll();
+    if (progress < 1) requestAnimationFrame(animateFold);
+    else drawReflected();
+  }
+
+  requestAnimationFrame(animateFold);
+};
+
+function drawReflected() {
+  // 绘制关于 AB 的镜像路径以验证结果
+  const reflectedPath1 = reflectPathAcrossLine(pathData, A, B);
+  const triangle1Copy = new fabric.Path(reflectedPath1, {
+    fill: "rgba(0,0,255,0.12)",
+    stroke: "none",
+    selectable: false
+  });
+  const reflectedPath2 = reflectPathAcrossLine(p1, A, B);
+  const triangle2Copy = new fabric.Path(reflectedPath2, {
+    fill: "rgba(0,0,255,0.12)",
+    stroke: "none",
+    selectable: false
+  });
+
+  // 可先移除之前添加的镜像（这里简单再加上）
+  canvas.add(triangle1Copy);
+  canvas.add(triangle2Copy);
+  canvas.renderAll();
+}
+
+// 关于 AB 的镜像函数 —— 同样支持 M/L 多对坐标、Q、Z
+function reflectPathAcrossLine(pathData, A, B) {
+  const dx = B.x - A.x, dy = B.y - A.y;
+  const a = dy, b = -dx, c = dx * A.y - dy * A.x;
+  const reflectPoint = (x, y) => {
+    const d = (a * x + b * y + c) / (a*a + b*b);
+    return [x - 2 * a * d, y - 2 * b * d];
+  };
+
+  const regex = /([MLQZmlqz])([^MLQZmlqz]*)/g;
+  let result = "";
+  let match;
+  while ((match = regex.exec(pathData))) {
+    const cmdRaw = match[1];
+    const cmd = cmdRaw.toUpperCase();
+    const nums = match[2].trim().split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+    if (cmd === 'M' || cmd === 'L') {
+      for (let i = 0; i < nums.length; i += 2) {
+        const x = nums[i], y = nums[i+1];
+        if (typeof x === 'undefined' || typeof y === 'undefined') break;
+        const thisCmd = (i === 0) ? cmd : 'L';
+        const [rx, ry] = reflectPoint(x, y);
+        result += `${thisCmd} ${rx} ${ry} `;
+      }
+    } else if (cmd === 'Q') {
+      for (let i = 0; i + 3 < nums.length; i += 4) {
+        const [rcx, rcy] = reflectPoint(nums[i], nums[i+1]);
+        const [rx, ry] = reflectPoint(nums[i+2], nums[i+3]);
+        result += `Q ${rcx} ${rcy} ${rx} ${ry} `;
+      }
+    } else if (cmd === 'Z') {
+      result += 'Z ';
+    }
+  }
+  return result;
+}
+</script>
+</body>
+</html>

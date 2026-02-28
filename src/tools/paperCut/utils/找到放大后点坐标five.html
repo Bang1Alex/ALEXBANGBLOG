@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Fabric Path 精确顶点计算</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+</head>
+
+<body>
+  <canvas id="c" width="1000" height="1000" style="border:1px solid #ccc"></canvas>
+  <script>
+    const canvas = new fabric.Canvas("c");
+    fabric.Object.prototype.objectCaching = false;
+    fabric.Object.prototype.transparentCorners = false;
+    fabric.Object.prototype.originX = "center";
+    fabric.Object.prototype.originY = "center";
+    fabric.Object.prototype.borderColor = "rgb(185,180,174)";
+    fabric.Object.prototype.cornerStrokeColor = "rgb(185,180,174)";
+    fabric.Object.prototype.cornerColor = "#019ae2";
+    // === 测试路径 ===
+    const pathStr = `M 400 250L 147.9852978095895 121.5920957266308L 164.88589905486 173.6067978295L 120.6395506519 205.7536516755L 152.7864044901 250L 120.6395506762313 294.2463484 Z`;
+    const trianglePath1 = new fabric.Path(pathStr, {
+      fill: "rgba(255,0,0)",
+      originX: "center",
+      originY: "center",
+      //     scaleX: 1.5,
+      //   scaleY: 1.5,
+    });
+    // canvas.add(trianglePath1);
+    const trianglePath2 = new fabric.Path(pathStr, {
+      fill: "rgba(255,0,0,0.3)",
+      originX: "center",
+      originY: "center",
+     scaleX: 1.5,
+    scaleY: 1.5,
+    angle: 81,
+    });
+    canvas.add(trianglePath2);
+
+    // ✅ 完全正确的函数
+    function getTransformedPathPoints(path) {
+
+      const matrix = path.calcTransformMatrix();
+      console.log(matrix);
+
+      const transformedPoints = [];
+
+      // path.path 是一个二维数组，比如 [['M', x, y], ['L', x, y], ...]
+      const cmds = path.path;
+      console.log(cmds);
+      for (let cmd of cmds) {
+        const type = cmd[0];
+        const nums = cmd.slice(1);
+        // 一条命令可能包含多对坐标，例如 C 命令
+        for (let i = 0; i < nums.length; i += 2) {
+          const pt = new fabric.Point(nums[i], nums[i + 1]);
+          const abs = fabric.util.transformPoint(pt, matrix);
+          transformedPoints.push(abs);
+        }
+      }
+
+      return transformedPoints;
+    }
+
+    // === 调用函数 ===
+    const pts = getTransformedPathPoints(trianglePath2);
+
+    // === 可视化 ===
+    pts.forEach((p, i) => {
+      const circle = new fabric.Circle({
+        left: p.x,
+        top: p.y,
+        radius: 5,
+        fill: "blue",
+        originX: "center",
+        originY: "center",
+        selectable: false
+      });
+      canvas.add(circle);
+      const label = new fabric.Text(String(i + 1), {
+        left: p.x + 8,
+        top: p.y - 8,
+        fontSize: 14,
+        fill: "black",
+        selectable: false
+      });
+      canvas.add(label);
+    });
+
+    // === 用计算出的点重新绘制一个 Path，检查是否重合 ===
+    let newPathStr = "";
+    // const dx = 304.6; // 297
+    // const dy = 372.3; // 380
+    const dx = -247; // 297
+    const dy = 435; // 380
+    pts.forEach((p, i) => {
+      if (i === 0) newPathStr += `M ${p.x - dx} ${p.y - dy} `;
+      else if (i === pts.length - 1) newPathStr += `L ${p.x - dx} ${p.y - dy} Z`;
+      else newPathStr += `L ${p.x - dx} ${p.y - dy} `;
+    });
+    console.log("newPathStr",newPathStr);
+
+    const pathCopy = new fabric.Path(newPathStr, {
+      fill: "rgba(0,255,0,0.3)",
+      selectable: false,
+    });
+    canvas.add(pathCopy);
+
+    console.log("✅ 画布坐标下的所有顶点：", pts.map(p => [p.x.toFixed(2), p.y.toFixed(2)]));
+
+    let arr = [1, 2, 3, 4];
+    const mid = Math.ceil(arr.length / 2);
+
+    const part1 = arr.slice(0, mid);  // [1, 2]
+    const part2 = arr.slice(mid);    // [3, 4]
+
+    console.log(part1, part2);
+  </script>
+</body>
+
+</html>

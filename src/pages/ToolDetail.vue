@@ -2,12 +2,14 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import HuarongRoad from '@/tools/HuarongRoad/index.vue'
+import PaperCut from '@/tools/paperCut/index.vue'
 
 const route = useRoute()
 
 // Map tool IDs to components
 const toolMap: Record<string, any> = {
-  HuarongRoad
+  HuarongRoad,
+  paperCut: PaperCut
 }
 
 const currentToolId = computed(() => route.params.id as string)

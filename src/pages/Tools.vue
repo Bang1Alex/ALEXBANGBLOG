@@ -10,6 +10,12 @@ const tools = ref([
     name: 'Huarong Road', 
     description: 'A classic sliding block puzzle game.',
     icon: 'Grid' // Using Element Plus Icon name
+  },
+  {
+    id:'paperCut',
+    name:'Paper Cut',
+    description:'Cut paper into any shape you want.',
+    icon:'Grid'
   }
 ])
 

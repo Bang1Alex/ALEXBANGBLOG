@@ -18,15 +18,18 @@
     "@element-plus/icons-vue": "^2.3.2",
     "clsx": "^2.1.1",
     "element-plus": "^2.13.2",
+    "fabric-with-gestures": "^4.5.0",
     "highlight.js": "^11.11.1",
     "lucide-vue-next": "^0.511.0",
     "markdown-it": "^14.1.1",
     "pinia": "^3.0.4",
+    "polygon-clipping": "^0.15.7",
     "tailwind-merge": "^3.3.0",
     "vue": "^3.4.15",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@esbuild/win32-x64": "^0.18.20",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.19.13",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
