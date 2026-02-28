@@ -44,7 +44,7 @@ const handleSelect = (key: string) => {
     </el-main>
     
     <el-footer>
-      <p>&copy; 2023 Alex Blog. Built with Vue 3 + Element Plus.</p>
+      <p>&copy; 2023 Alex Blog</p>
     </el-footer>
   </el-container>
 </template>
@@ -69,7 +69,11 @@ const handleSelect = (key: string) => {
 .el-header {
   padding: 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  z-index: 100;
+  z-index: 1000;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  width: 100%;
 }
 
 .el-main {
