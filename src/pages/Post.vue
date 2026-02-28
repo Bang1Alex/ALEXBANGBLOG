@@ -2,8 +2,6 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import MarkdownIt from 'markdown-it'
-import hljs from 'highlight.js'
-
 const route = useRoute()
 const content = ref('')
 const loading = ref(true)
@@ -23,16 +21,6 @@ const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
-  highlight: function (str, lang) {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return hljs.highlight(str, { language: lang }).value
-      } catch {
-        return ''
-      }
-    }
-    return '' // use external default escaping
-  }
 })
 
 const loadPost = async () => {
