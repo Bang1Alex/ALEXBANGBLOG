@@ -24,49 +24,74 @@
     <!-- 主游戏区域 + 顶部信息栏 -->
     <div v-show="!showCover && !gameCompleted" class="game-area">
       <div class="game-header">
-        <div class="level-info">
-          第 <strong>{{ currentLevelIndex + 1 }}</strong> 关 / 共 {{ totalLevels }} 关
+        <div class="level-badge">
+          <span class="label">LEVEL</span>
+          <span class="value">{{ currentLevelIndex + 1 }}</span>
+          <span class="total">/ {{ totalLevels }}</span>
         </div>
-        <div class="timer">
-          ⏱️ {{ elapsedTime }}
+        
+        <div class="header-center">
+          <div class="timer-card">
+            <clock-circle-outlined />
+            <span>{{ elapsedTime }}</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <a-tooltip title="获取提示">
+            <a-button type="primary" shape="circle" size="large" @click="showHint" class="action-btn hint">
+              <bulb-outlined />
+            </a-button>
+          </a-tooltip>
+          <a-tooltip title="重置本关">
+            <a-button shape="circle" size="large" @click="loadLevel" class="action-btn">
+              <reload-outlined />
+            </a-button>
+          </a-tooltip>
         </div>
       </div>
 
-      <div class="game-container" :style="{ width: widgetWidth + 'px', height: widgetHeight + 'px' }" :id="containerId">
-      </div>
-
-      <!-- 提示按钮 -->
-      <div class="hint-btn" @click="showHint">
-        提示
+      <div class="game-container-wrapper">
+        <div class="game-container" :id="containerId"></div>
       </div>
 
       <!-- 过关弹窗 -->
-      <a-modal v-model:visible="showSuccessModal" :closable="false" :maskClosable="false" :keyboard="false" centered>
-        <template #title><span style="font-size: 1.4em; color: #52c41a">恭喜过关！</span></template>
+      <a-modal v-model:open="showSuccessModal" :footer="null" :closable="false" :maskClosable="false" :keyboard="false" centered width="360px" class="success-modal">
         <div class="success-content">
-          <div class="emoji">🎉</div>
-          <p>回答正确～</p>
+          <div class="success-icon">
+            <check-circle-filled />
+          </div>
+          <h3 class="success-title">挑战成功!</h3>
+          <p class="success-desc">太棒了，你的逻辑思维很敏捷！</p>
+          <a-button type="primary" size="large" block @click="goToNextLevel" class="next-btn">
+            下一关 <arrow-right-outlined />
+          </a-button>
         </div>
-        <template #footer>
-          <a-button type="primary" @click="goToNextLevel">下一关</a-button>
-        </template>
+        <!-- <template #footer>null</template> -->
       </a-modal>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import Konva from 'konva'
 import { message } from 'ant-design-vue'
+import { 
+  ClockCircleOutlined, 
+  BulbOutlined, 
+  ReloadOutlined,
+  CheckCircleFilled,
+  ArrowRightOutlined
+} from '@ant-design/icons-vue'
 import { main } from './utils/index'  // 请根据实际路径导入你的关卡生成函数
 
 // ==================== 注入与容器相关 ====================
 // const store = inject('store') as any
 // const widget = inject('widget') as any
 const containerId = computed(() => `${'alex-bang'}-konva`)
-const widgetWidth = ref(1200)
-const widgetHeight = ref(600)
+const widgetWidth = ref('100%')
+const widgetHeight = ref('100%')
 
 // ==================== 游戏状态 ====================
 const showCover = ref(true)
@@ -127,6 +152,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (timerInterval) clearInterval(timerInterval)
+  window.removeEventListener('resize', handleResize)
 })
 
 // ==================== 计时器 ====================
@@ -161,10 +187,14 @@ function stopTimer(): { format: string, totalMs: number } {
 }
 
 // ==================== 游戏控制 ====================
-function startGame() {
+async function startGame() {
   showCover.value = false
   gameCompleted.value = false
   currentLevelIndex.value = 0
+  
+  await nextTick()
+  handleResize()
+  
   startTimer()
   loadLevel()
 }
@@ -213,14 +243,47 @@ function goToNextLevel() {
 
 // ==================== Konva 初始化与关卡加载 ====================
 function initKonvaStage() {
+  const container = document.getElementById(containerId.value)
+  if (!container) return
+
   stage.value = new Konva.Stage({
     container: containerId.value,
-    width: widgetWidth.value,
-    height: widgetHeight.value,
+    width: container.clientWidth,
+    height: container.clientHeight,
   })
 
   layer.value = new Konva.Layer()
   stage.value.add(layer.value)
+  
+  // 响应式调整
+  window.addEventListener('resize', handleResize)
+  handleResize()
+}
+
+function handleResize() {
+  const container = document.getElementById(containerId.value)
+  if (!container || !stage.value) return
+  
+  stage.value.width(container.clientWidth)
+  stage.value.height(container.clientHeight)
+  
+  // 重新计算内容缩放和位置
+  if (layer.value) {
+    // 简单的居中逻辑，可以根据需要优化
+    const scale = Math.min(
+      container.clientWidth / 1200, 
+      container.clientHeight / 600
+    ) * 0.9 // 留一点边距
+    
+    layer.value.scale({ x: scale, y: scale })
+    
+    // 居中偏移
+    const offsetX = (container.clientWidth - 1200 * scale) / 2
+    const offsetY = (container.clientHeight - 600 * scale) / 2
+    layer.value.position({ x: offsetX, y: offsetY })
+    
+    layer.value.batchDraw()
+  }
 }
 
 function loadLevel() {
@@ -438,8 +501,8 @@ function showHint() {
 <style scoped lang="less">
 .checkers-game {
   position: relative;
-  // width: 100%;
-  height: 100%;
+  width: 100%;
+  height: 80vh; /* 设定固定高度，或者使用 min-height */
   user-select: none;
   overflow: hidden;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
@@ -448,6 +511,7 @@ function showHint() {
 
 .cover-layer {
   // position: absolute;
+  height: 100%;
   inset: 0;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -480,6 +544,23 @@ function showHint() {
 
 .game-area {
   position: relative;
+  height: 100%;
+}
+
+.game-container-wrapper {
+  position: absolute;
+  top: 64px; /* 留出 header 高度 */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.game-container {
+  width: 100%;
   height: 100%;
 }
 
@@ -587,4 +668,19 @@ function showHint() {
     color: #555;
   }
 }
+  /* 响应式调整 */
+  @media (max-width: 768px) {
+    .game-header {
+      padding: 0 16px;
+      
+      .level-badge {
+        .label { display: none; }
+      }
+      
+      .timer-card {
+        padding: 4px 12px;
+        font-size: 1rem;
+      }
+    }
+  }
 </style>

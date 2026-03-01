@@ -78,6 +78,9 @@ const openTool = (id: string) => {
   h2 {
     text-align: center;
     margin-bottom: 40px;
+    color: #fff; /* 确保标题在深色背景下可见 */
+    font-size: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   }
   
   .tools-grid {

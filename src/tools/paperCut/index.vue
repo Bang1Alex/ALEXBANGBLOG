@@ -4,6 +4,18 @@ import { fabric } from "fabric-with-gestures";
 import { calculateIntersection } from './utils/utils'
 import { normalizeColorWithHalfOpacity, drawBaseShape, listIcons, paperCutPath, bastPath, drawNormal } from './libs/config';
 import { addIconMouseDown, addIconMouseMove, addIconMouseUp, cutting } from './libs/addIcon'
+import { 
+  ScissorOutlined, 
+  EditOutlined, 
+  ClearOutlined, 
+  WindowsOutlined, 
+  UndoOutlined, 
+  RedoOutlined, 
+  DeleteOutlined,
+  ExpandAltOutlined,
+} from '@ant-design/icons-vue'
+
+import { Sketch } from '@ckpack/vue-color';
 
 const currentTool = ref<'scissors' | 'pen' | 'eraser' | 'shapes' | ''>('scissors');
 const shapeMode = ref<'normal' | 'symmetry' | 'fourCorners' | 'sixCorners' | 'fiveCorners'>('normal')
@@ -42,9 +54,26 @@ onMounted(() => {
   addEventListeners();
   setShapeMode(shapeMode.value);
 });
+const showPaperColorPicker = ref(false);
+const showBrushColorPicker = ref(false);
+
+watch(brushColor, (val) => {
+  if (fabricCanvas.value && fabricCanvas.value.freeDrawingBrush) {
+    fabricCanvas.value.freeDrawingBrush.color = val;
+  }
+});
 watch(paperColor, () => {
   setShapeMode(shapeMode.value);
 });
+function handlePaperColorChange(val) {
+  console.log(val);
+  
+  paperColor.value =  val.hex8;
+}
+
+function handleBrushColorChange(val) {
+  brushColor.value = val.hex8;
+}
 function initFabric() {
   if (!editorContainerRef.value) return;
   editorContainerRef.value.width = 800;
@@ -1151,164 +1180,338 @@ function handleHoverChange(hover) {
 </script>
 
 <template>
- <div class="container" id="container">
-    <div class="tools">
-      <div class="row"> <a-button @click="undo"><undo-outlined />撤销</a-button>
-        <a-button @click="redo"><redo-outlined />重做</a-button>
-        <a-button @click="clearCanvas"><delete-outlined />清空</a-button>
-        <a-button :disabled="!isVisibleExpand" :type="currentTool === 'scissors' ? 'primary' : 'default'"
-          @click="setTool('scissors')">
-          <ScissorOutlined /> 剪刀
-        </a-button>
-        <a-button :disabled="!isVisibleExpand" :type="currentTool === 'pen' ? 'primary' : 'default'"
-          @click="setTool('pen')">
-          <EditOutlined /> 画笔
-        </a-button>
-        <a-button :disabled="!isVisibleExpand" :type="currentTool === 'eraser' ? 'primary' : 'default'"
-          @click="setTool('eraser')">
-          <ClearOutlined /> 橡皮
-        </a-button>
-
-        <a-popover title="添加图形" placement="bottomRight" :open="clicked" trigger="click"
-          @openChange="handleHoverChange">
-          <template #content>
-            <div class="box-shape">
-              <div class="img-icon" :class="currentShapeType == value.type ? 'active' : ''" v-for="value in iconLists" :key="value.type"
-                :style="{ width: value.type === 'rectangle' ? '56px' : '41px' }" @click="setShapeType(value.type)">
-                <img :src="value.url"
-                  :style="{ width: value.type === 'rectangle' ? '55px' : '40px' }" :alt="value.type">
-              </div>
-            </div>
-          </template>
-          <a-button :disabled="!isVisibleExpand" :type="currentTool === 'shapes' ? 'primary' : 'default'"
-            @click="setTool('shapes')">
-            <windows-outlined /> 图形
-          </a-button>
-        </a-popover>
-
-
+  <div class="paper-cut-container">
+    <div class="toolbar-panel">
+      <!-- 基础工具 -->
+      <div class="tool-group">
+        <div class="group-title">工具</div>
+        <div class="group-content">
+          <a-tooltip title="撤销">
+            <a-button @click="undo" class="icon-btn"><undo-outlined /></a-button>
+          </a-tooltip>
+          <a-tooltip title="重做">
+            <a-button @click="redo" class="icon-btn"><redo-outlined /></a-button>
+          </a-tooltip>
+          <a-tooltip title="清空画布">
+            <a-button @click="clearCanvas" class="icon-btn" danger><delete-outlined /></a-button>
+          </a-tooltip>
+        </div>
       </div>
-      <div class="row">
-        <a-button :disabled="!isCutting || isAnimating" :type="shapeMode === 'normal' ? 'primary' : 'default'"
-          @click="setShapeMode('normal')">
-          普通模式
-        </a-button>
-        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'symmetry')"
-          :type="shapeMode === 'symmetry' ? 'primary' : 'default'" @click="setShapeMode('symmetry')">
-          对折模式
-        </a-button>
-        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'fourCorners')"
-          :type="shapeMode === 'fourCorners' ? 'primary' : 'default'" @click="setShapeMode('fourCorners')">
-          四折模式
-        </a-button>
-        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'sixCorners')"
-          :type="shapeMode === 'sixCorners' ? 'primary' : 'default'" @click="setShapeMode('sixCorners')">
-          六折模式
-        </a-button>
-        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'fiveCorners')"
-          :type="shapeMode === 'fiveCorners' ? 'primary' : 'default'" @click="setShapeMode('fiveCorners')">
-          五折模式
-        </a-button>
-        <a-button :disabled="isCutting" @click="cut">裁切</a-button>
-        <a-button :disabled="!isCutting" v-if="isVisibleExpand" @click="expandPaper">展开</a-button>
-        
-        <a-button :disabled="!isCutting || isAnimating" v-else @click="foldPaper">折叠</a-button>
-         <a-switch v-model:checked="foldMarkVisible" checked-children="折痕开" un-checked-children="折痕关" />
-        <!-- <a-button :disabled="!isCutting || isAnimating" @click="submit">提交</a-button> -->
+
+      <a-divider style="margin: 12px 0" />
+
+      <!-- 绘图工具 -->
+      <div class="tool-group">
+        <div class="group-title">绘图</div>
+        <div class="group-content">
+          <a-tooltip title="剪刀 (F)">
+            <a-button :type="currentTool === 'scissors' ? 'primary' : 'default'" @click="setTool('scissors')" class="tool-btn">
+              <ScissorOutlined /> 剪刀
+            </a-button>
+          </a-tooltip>
+          <a-tooltip title="画笔 (P)">
+            <a-button :type="currentTool === 'pen' ? 'primary' : 'default'" @click="setTool('pen')" class="tool-btn">
+              <EditOutlined /> 画笔
+            </a-button>
+          </a-tooltip>
+          <a-tooltip title="橡皮 (E)">
+            <a-button :type="currentTool === 'eraser' ? 'primary' : 'default'" @click="setTool('eraser')" class="tool-btn">
+              <ClearOutlined /> 橡皮
+            </a-button>
+          </a-tooltip>
+          
+          <a-popover title="选择图形" placement="right" :open="clicked" trigger="click" @openChange="handleHoverChange">
+            <template #content>
+              <div class="shape-picker">
+                <div 
+                  v-for="value in iconLists" 
+                  :key="value.type"
+                  class="shape-item"
+                  :class="{ active: currentShapeType === value.type }"
+                  @click="setShapeType(value.type)"
+                >
+                  <img :src="value.url" :alt="value.type">
+                </div>
+              </div>
+            </template>
+            <a-button :type="currentTool === 'shapes' ? 'primary' : 'default'" @click="setTool('shapes')" class="tool-btn">
+              <windows-outlined /> 图形
+            </a-button>
+          </a-popover>
+        </div>
+      </div>
+
+      <a-divider style="margin: 12px 0" />
+
+      <!-- 颜色设置 -->
+      <div class="tool-group">
+        <div class="group-title">颜色设置</div>
+        <div class="group-content">
+          <div class="color-picker-wrapper">
+            <span class="label">纸张</span>
+            <a-popover v-model:open="showPaperColorPicker" trigger="click" placement="bottomLeft">
+              <template #content>
+                <Sketch :modelValue="paperColor" @update:modelValue="handlePaperColorChange" />
+              </template>
+              <div class="color-preview" :style="{ backgroundColor: paperColor }"></div>
+            </a-popover>
+          </div>
+          
+          <div class="color-picker-wrapper">
+            <span class="label">画笔</span>
+            <a-popover v-model:open="showBrushColorPicker" trigger="click" placement="bottomLeft">
+              <template #content>
+                <Sketch :modelValue="brushColor" @update:modelValue="handleBrushColorChange" />
+              </template>
+              <div class="color-preview" :style="{ backgroundColor: brushColor }"></div>
+            </a-popover>
+          </div>
+        </div>
+      </div>
+
+      <a-divider style="margin: 12px 0" />
+
+      <!-- 折叠模式 -->
+      <div class="tool-group">
+        <div class="group-title">折叠模式</div>
+        <div class="group-content column-layout">
+          <a-radio-group v-model:value="shapeMode" button-style="solid" @change="setShapeMode(shapeMode)" :disabled="!isCutting || isAnimating">
+            <a-radio-button value="normal">普通</a-radio-button>
+            <a-radio-button value="symmetry">对折</a-radio-button>
+            <a-radio-button value="fourCorners">四折</a-radio-button>
+            <a-radio-button value="sixCorners">六折</a-radio-button>
+            <a-radio-button value="fiveCorners">五折</a-radio-button>
+          </a-radio-group>
+        </div>
+      </div>
+
+      <a-divider style="margin: 12px 0" />
+
+      <!-- 操作控制 -->
+      <div class="tool-group">
+        <div class="group-title">操作</div>
+        <div class="group-content">
+          <a-button type="primary" :disabled="isCutting" @click="cut" block>
+            <ScissorOutlined /> 裁切
+          </a-button>
+          <a-button v-if="isVisibleExpand" :disabled="!isCutting" @click="expandPaper" block>
+            <ExpandAltOutlined /> 展开
+          </a-button>
+          <a-button v-else :disabled="!isCutting || isAnimating" @click="foldPaper" block>
+          折叠
+          </a-button>
+          <div class="switch-wrapper">
+            <a-switch v-model:checked="foldMarkVisible" checked-children="折痕开" un-checked-children="折痕关" />
+          </div>
+        </div>
       </div>
     </div>
-    <canvas class="editor-container" ref="editorContainerRef"></canvas>
+
+    <div class="canvas-area">
+      <div class="canvas-wrapper">
+        <canvas class="editor-container" ref="editorContainerRef"></canvas>
+      </div>
+    </div>
   </div>
 </template>
 
 <style src="./style.less" scoped></style>
 <style scoped lang="less">
-.block.selected {
-  border: 3px solid #409EFF !important;
-  box-shadow: 0 0 15px rgba(64, 158, 255, 0.6) !important;
-  z-index: 10;
-}
- .container {
-  box-sizing: border-box;
-  user-select: none;
-  // width: 100%;
-  height: 100%;
-  border: 1px solid #073dba;
-  border-radius: 8px;
-  // background: #f5f7fa; // 浅灰背景，避免纯白刺眼
+.paper-cut-container {
   display: flex;
-  flex-direction: column;
+  height: 80vh; /* 固定高度，适应视窗 */
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
-  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  .tools {
+  /* 左侧工具栏 */
+  .toolbar-panel {
+    width: 280px;
+    background: #fafafa;
+    border-right: 1px solid #f0f0f0;
     padding: 16px;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px); // 毛玻璃效果
-    border-bottom: 1px solid #e1e4e8;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 12px;
-
-      &:last-child {
-        margin-bottom: 0;
+    .tool-group {
+      .group-title {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
-      // 美化 Ant Design 按钮
-      :deep(.ant-btn) {
-        border-radius: 8px;
-        height: 36px;
-        padding: 0 16px;
-        font-weight: 500;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      .group-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
 
-        &:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        &.column-layout {
+          flex-direction: column;
         }
 
-        &.ant-btn-primary {
-          background: linear-gradient(135deg, #019fe9, #007bb5);
-          border: none;
+        .icon-btn {
+          width: 36px;
+          height: 36px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 6px;
+        }
 
-          &:hover {
-            background: linear-gradient(135deg, #00b0ff, #019fe9);
+        .tool-btn {
+          flex: 1;
+          min-width: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 6px;
+          
+          .anticon {
+            margin-right: 6px;
           }
         }
 
-        .anticon {
-          font-size: 16px;
-          margin-right: 6px;
+        .switch-wrapper {
+          display: flex;
+          justify-content: center;
+          margin-top: 8px;
+          width: 100%;
         }
       }
     }
   }
+
+  /* 右侧画布区域 */
+  .canvas-area {
+    flex: 1;
+    background: #f0f2f5; /* 浅灰背景衬托画布 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: auto;
+    padding: 20px;
+
+    .canvas-wrapper {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      background: white;
+      /* 确保 canvas 不会被挤压 */
+      flex-shrink: 0; 
+    }
+  }
 }
 
-.box-shape {
+/* 图形选择器样式 */
+.shape-picker {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 8px;
+  max-width: 240px;
 
-  .img-icon {
-    img {
-      width: 40px;
-      height: 40px;
-      padding: 1px;
+  .shape-item {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    padding: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+
+    &:hover {
+      background: #e6f7ff;
+      border-color: #91d5ff;
     }
 
     &.active {
-      border: 1px solid red;
+      background: #e6f7ff;
+      border-color: #1890ff;
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
     }
   }
+}
 
+/* 颜色选择器样式 */
+.color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+
+  .label {
+    font-size: 13px;
+    color: #666;
+    width: 32px;
+  }
+
+  .color-preview {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid #d9d9d9;
+    cursor: pointer;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .paper-cut-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 80vh;
+
+    .toolbar-panel {
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid #f0f0f0;
+      flex-direction: row;
+      flex-wrap: wrap;
+      padding: 12px;
+      gap: 16px;
+
+      .tool-group {
+        margin-bottom: 0;
+        
+        .group-content {
+          flex-direction: row !important;
+        }
+      }
+      
+      /* 隐藏分割线以节省空间 */
+      .ant-divider {
+        display: none;
+      }
+    }
+
+    .canvas-area {
+      padding: 10px;
+      min-height: 400px;
+    }
+  }
 }
 </style>

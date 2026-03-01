@@ -1,70 +1,86 @@
 <template>
-  <div class="container">
-    <div id="mindMapContainer" ref="refContainer" :style="{ width: widgetWidth + 'px', height: widgetHeight + 'px' }"></div>
-    <div class="toolbar">
-      <div class="toolbarBtn" :class="{ disable: isStart }" @click="execCommand('BACK')">
-        <span class="icon iconfont icon-huitui"></span>
-        <div class="text">回退</div>
+  <div class="mindmap-container">
+    <div class="header-toolbar">
+      <div class="tool-group">
+        <a-tooltip title="回退">
+          <a-button :disabled="isStart" @click="execCommand('BACK')" type="text">
+            <template #icon><undo-outlined /></template>
+          </a-button>
+        </a-tooltip>
+        <a-tooltip title="前进">
+          <a-button :disabled="isEnd" @click="execCommand('FORWARD')" type="text">
+            <template #icon><redo-outlined /></template>
+          </a-button>
+        </a-tooltip>
       </div>
-      <div class="toolbarBtn" :class="{ disable: isEnd }" @click="execCommand('FORWARD')">
-        <span class="icon iconfont icon-qianjin-shi"></span>
-        <div class="text">前进</div>
+      <a-divider type="vertical" />
+      <div class="tool-group">
+        <a-tooltip title="格式刷">
+          <a-button :type="isInPainter ? 'primary' : 'text'" :disabled="activeNodes.length === 0" @click="execCommand('paintBrush')">
+            <template #icon><format-painter-outlined /></template>
+          </a-button>
+        </a-tooltip>
       </div>
-      <div class="toolbarBtn" :class="{ disable: activeNodes.length === 0, active: isInPainter }"
-        @click="execCommand('paintBrush')">
-        <span class="icon iconfont icon-geshishua"></span>
-        <div class="text">格式刷</div>
-      </div>
-      <div class="toolbarBtn" :class="{ disable: activeNodes.length === 0 || activeNodes[0].isRoot }"
-        @click="execCommand('INSERT_NODE')">
-        <span class="icon iconfont icon-tongjijiedian-"></span>
-        <div class="text">同级节点</div>
-      </div>
-      <div class="toolbarBtn" :class="{ disable: activeNodes.length === 0 }" @click="execCommand('INSERT_CHILD_NODE')">
-        <span class="icon iconfont icon-tianjiazijiedian"></span>
-        <div class="text">子节点</div>
-      </div>
-      <div class="toolbarBtn" :class="{ disable: activeNodes.length === 0 }" @click="execCommand('REMOVE_NODE')">
-        <span class="icon iconfont icon-shanchu"></span>
-        <div class="text">删除节点</div>
-      </div>
-      <div class="toolbarBtn" :class="{ disable: activeNodes.length === 0 }" @click="execCommand('releaseLine')">
-        <span class="icon iconfont icon-guanlian"></span>
-        <div class="text">关联线</div>
-      </div>
-    </div>
-    <div class="custom-toolbar">
-      <div class="toolbarBtn" @click="clickCustomToolbar('nodeStyle')">
-        <span class="icon iconfont icon-jiedianyangshi"></span>
-        <div class="text">节点样式</div>
-      </div>
-      <div class="toolbarBtn" @click="clickCustomToolbar('theme')">
-        <span class="icon iconfont icon-zhuti"></span>
-        <div class="text">主题</div>
-      </div>
-      <div class="toolbarBtn" @click="clickCustomToolbar('structure')">
-        <span class="icon iconfont icon-jiegou"></span>
-        <div class="text">结构</div>
+      <a-divider type="vertical" />
+      <div class="tool-group">
+        <a-tooltip title="同级节点 (Enter)">
+          <a-button :disabled="activeNodes.length === 0 || activeNodes[0].isRoot" @click="execCommand('INSERT_NODE')" type="text">
+            <template #icon><node-index-outlined /></template> 同级
+          </a-button>
+        </a-tooltip>
+        <a-tooltip title="子节点 (Tab)">
+          <a-button :disabled="activeNodes.length === 0" @click="execCommand('INSERT_CHILD_NODE')" type="text">
+            <template #icon><apartment-outlined /></template> 子级
+          </a-button>
+        </a-tooltip>
+        <a-tooltip title="删除节点 (Del)">
+          <a-button :disabled="activeNodes.length === 0" @click="execCommand('REMOVE_NODE')" type="text" danger>
+            <template #icon><delete-outlined /></template>
+          </a-button>
+        </a-tooltip>
+        <a-tooltip title="关联线">
+          <a-button :disabled="activeNodes.length === 0" @click="execCommand('releaseLine')" type="text">
+            <template #icon><share-alt-outlined /></template> 关联
+          </a-button>
+        </a-tooltip>
       </div>
     </div>
-    <a-drawer placement="right" :closable="false" width="300px" :mask="false" :open="visible"
+    
+    <div class="main-content">
+      <div class="canvas-wrapper">
+         <div id="mindMapContainer" ref="refContainer" :style="{ width: widgetWidth, height: widgetHeight }"></div>
+      </div>
+      
+      <div class="side-panel">
+        <div class="panel-trigger" @click="clickCustomToolbar('nodeStyle')" :class="{ active: customToolbarTitle === '节点样式' && visible }">
+          <font-size-outlined />
+          <span>样式</span>
+        </div>
+        <div class="panel-trigger" @click="clickCustomToolbar('theme')" :class="{ active: customToolbarTitle === '主题' && visible }">
+          <skin-outlined />
+          <span>主题</span>
+        </div>
+        <div class="panel-trigger" @click="clickCustomToolbar('structure')" :class="{ active: customToolbarTitle === '结构' && visible }">
+          <branches-outlined />
+          <span>结构</span>
+        </div>
+      </div>
+    </div>
+
+    <a-drawer placement="right" :closable="true" width="320px" :mask="false" :open="visible"
       @close="visible = false" :get-container="false" :style="{ position: 'absolute' }">
       <template #title>
-        <div class="title" style="position: relative;">
-          <div class="text" style="text-align: center;">
-            {{ customToolbarTitle }}
-          </div>
-          <span class="delete" @click="visible = false"
-            style="position: absolute; top: 0; right: 0; cursor: pointer;">X</span>
+        <div class="drawer-title">
+          {{ customToolbarTitle }}
         </div>
       </template>
-      <NodeStyle :customToolbarTitle="customToolbarTitle" :activeNodes="activeNodes" :myStyle="myStyle" />
-      <Theme :customToolbarTitle="customToolbarTitle" :mindMap="mindMap" :getImageUrlFromPath="getImageUrlFromPath" />
-      <Structure :customToolbarTitle="customToolbarTitle" :mindMap="mindMap"
-        :getImageUrlFromPath="getImageUrlFromPath" />
+      <div class="drawer-content">
+        <NodeStyle v-show="customToolbarTitle === '节点样式'" :customToolbarTitle="customToolbarTitle" :activeNodes="activeNodes" :myStyle="myStyle" />
+        <Theme v-show="customToolbarTitle === '主题'" :customToolbarTitle="customToolbarTitle" :mindMap="mindMap" :getImageUrlFromPath="getImageUrlFromPath" />
+        <Structure v-show="customToolbarTitle === '结构'" :customToolbarTitle="customToolbarTitle" :mindMap="mindMap" :getImageUrlFromPath="getImageUrlFromPath" />
+      </div>
     </a-drawer>
   </div>
-
 </template>
 
 <script lang="ts" setup>
@@ -82,6 +98,18 @@ import AssociativeLine from 'simple-mind-map/src/plugins/AssociativeLine.js'
 import Themes from 'simple-mind-map-plugin-themes'
 import TouchEvent from 'simple-mind-map/src/plugins/TouchEvent.js'
 import Export from 'simple-mind-map/src/plugins/Export.js'
+import {
+  UndoOutlined,
+  RedoOutlined,
+  FormatPainterOutlined,
+  NodeIndexOutlined,
+  ApartmentOutlined,
+  DeleteOutlined,
+  ShareAltOutlined,
+  FontSizeOutlined,
+  SkinOutlined,
+  BranchesOutlined
+} from '@ant-design/icons-vue'
 MindMap.usePlugin(Painter)
   .usePlugin(Drag)
   .usePlugin(MiniMap)
@@ -179,8 +207,8 @@ const preset = ref({
    
   });
 // const fullPath = computed(() => store.fullPath);
-const widgetWidth = ref(1200);
-const widgetHeight = ref(600);
+const widgetWidth = ref('100%');
+const widgetHeight = ref('100%');
 const saveData = ref(0);
 const refContainer = ref(null as any);
 const isStart = ref(true)
@@ -239,7 +267,20 @@ async function submit() {
 }
 onMounted(() => {
   initMindMap()
+  window.addEventListener('resize', handleResize)
 })
+
+import { onUnmounted } from 'vue'
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+function handleResize() {
+  if (mindMap) {
+    mindMap.resize()
+  }
+}
 function onPainterStart() {
   isInPainter.value = true
 }
@@ -379,130 +420,153 @@ function getImageUrlFromPath(imagePath: string) {
 </script>
 
 <style scoped lang="less">
-@import url("//at.alicdn.com/t/c/font_4970952_veohc2z9n6.css");
-
-.container {
-  position: relative;
-  box-sizing: border-box;
-  user-select: none;
- // width: 100%;
-  height: 100%;
-  // border: 1px solid #000;
+.mindmap-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 240px); /* 适应页面高度，减去可能的外部边距 */
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  background: #fff;
   overflow: hidden;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  .borderLine {
-    display: inline-block;
-    width: 100%;
-    background-color: #000;
+  .header-toolbar {
+    height: 48px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    flex-shrink: 0;
 
-    &.isDark {
-      background-color: #fff;
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
   }
 
-  .toolbar {
+  .main-content {
+    flex: 1;
     display: flex;
-    position: absolute;
-    top: 5px;
-    left: 50%;
-    transform: translate(-50%);
-    z-index: 10;
+    position: relative;
+    overflow: hidden;
 
-    .toolbarBtn {
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-      cursor: pointer;
-      margin-right: 10px;
-
-      &.disable {
-        color: #bcbcbc;
-        cursor: not-allowed;
-        pointer-events: none;
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      background: #f5f7fa;
+      
+      #mindMapContainer {
+        width: 100% !important;
+        height: 100% !important;
       }
+    }
 
-      &.active {
-        .icon {
-          background: #59697e;
+    .side-panel {
+      width: 48px;
+      background: #fff;
+      border-left: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 16px;
+      gap: 16px;
+      z-index: 10;
+
+      .panel-trigger {
+        width: 40px;
+        height: 48px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #666;
+        transition: all 0.2s;
+        border-radius: 4px;
+        font-size: 12px;
+        gap: 4px;
+
+        &:hover {
+          background: #f0f0f0;
+          color: #1890ff;
+        }
+
+        &.active {
+          background: #e6f7ff;
+          color: #1890ff;
+        }
+
+        .anticon {
+          font-size: 18px;
         }
       }
-
-      .icon {
-
-        height: 26px;
-        background: #fff;
-        border-radius: 4px;
-        border: 1px solid #e9e9e9;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-        padding: 0 5px;
-      }
-
-      .text {
-        margin-top: 3px;
-        text-align: center;
-      }
     }
   }
+}
 
-  .custom-toolbar {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
-    z-index: 10;
-    gap: 8px;
+.drawer-title {
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+}
 
-    .toolbarBtn {
-      display: flex;
-      justify-content: center;
+.drawer-content {
+  padding: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* 覆盖 Ant Design Drawer 样式使其嵌入容器 */
+:deep(.ant-drawer) {
+  position: absolute;
+}
+:deep(.ant-drawer-content-wrapper) {
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+}
+/* 响应式适配 */
+@media (max-width: 768px) {
+  .mindmap-container {
+    height: auto;
+    min-height: 80vh;
+
+    .header-toolbar {
+      height: auto;
+      flex-wrap: wrap;
+      padding: 8px;
+      gap: 4px;
+      
+      .tool-group {
+        flex-wrap: wrap;
+      }
+      
+      .ant-divider {
+        display: none;
+      }
+    }
+
+    .main-content {
       flex-direction: column;
-      cursor: pointer;
-      margin-right: 10px;
-      /* gap: 10px; */
-      border: 1px solid #e9e9e9;
+      height: 60vh;
 
-      &:hover {
-        background: #ededed;
+      .side-panel {
+        width: 100%;
+        height: 48px;
+        flex-direction: row;
+        border-left: none;
+        border-top: 1px solid #f0f0f0;
+        justify-content: space-around;
+        padding-top: 0;
+
+        .panel-trigger {
+          width: 100%;
+          height: 100%;
+          border-radius: 0;
+        }
       }
-
-      &.disable {
-        color: #bcbcbc;
-        cursor: not-allowed;
-        pointer-events: none;
-      }
-
-      .icon {
-
-        flex-direction: column;
-        text-align: center;
-        padding: 0 5px;
-      }
-
-      .text {
-        margin-top: 3px;
-        text-align: center;
-      }
-    }
-  }
-
-  #mindMapContainer {}
-
-  .title {
-    position: relative;
-
-    .text {
-      text-align: center;
-    }
-
-    .delete {
-      position: absolute;
-      top: 0;
-      right: 0;
-      cursor: pointer;
     }
   }
 }
