@@ -69,7 +69,7 @@ const goToPost = (slug: string) => {
 // --- Tools Logic ---
 const featuredTools = [
   {
-    id: 'paperCut',
+    id: 'PaperCut',
     name: '剪纸工具',
     desc: '自由创作剪纸艺术，感受传统文化魅力。',
     icon: ScissorOutlined,

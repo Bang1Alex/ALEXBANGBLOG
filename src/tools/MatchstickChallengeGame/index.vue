@@ -438,7 +438,7 @@ function showHint() {
 <style scoped lang="less">
 .checkers-game {
   position: relative;
-  width: 100%;
+  // width: 100%;
   height: 100%;
   user-select: none;
   overflow: hidden;

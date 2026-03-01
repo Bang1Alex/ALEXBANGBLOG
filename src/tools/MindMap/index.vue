@@ -179,8 +179,8 @@ const preset = ref({
    
   });
 // const fullPath = computed(() => store.fullPath);
-const widgetWidth = ref(800);
-const widgetHeight = ref(400);
+const widgetWidth = ref(1200);
+const widgetHeight = ref(600);
 const saveData = ref(0);
 const refContainer = ref(null as any);
 const isStart = ref(true)
@@ -385,7 +385,7 @@ function getImageUrlFromPath(imagePath: string) {
   position: relative;
   box-sizing: border-box;
   user-select: none;
-  width: 100%;
+ // width: 100%;
   height: 100%;
   // border: 1px solid #000;
   overflow: hidden;

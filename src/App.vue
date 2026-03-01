@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import StarBackground from './components/StarBackground.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -19,6 +20,7 @@ const handleClick = ({ key }: { key: string }) => {
 </script>
 
 <template>
+  <StarBackground />
   <a-layout class="app-container">
     <a-layout-header class="header">
       <div class="logo" @click="handleClick({ key: '/' })">Alex Blog</div>
@@ -50,6 +52,7 @@ const handleClick = ({ key }: { key: string }) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: transparent;
 }
 
 .header {
@@ -85,12 +88,14 @@ const handleClick = ({ key }: { key: string }) => {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  background: #fff; 
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  margin-top: 20px;
 }
 
 /* Ant Design Layout Content usually has grey background, override if needed */
 :deep(.ant-layout-content) {
-  background: #fff;
+  background: transparent;
 }
 
 .footer {

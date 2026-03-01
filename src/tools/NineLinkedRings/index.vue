@@ -83,7 +83,7 @@ function resetDo() {
 	box-sizing: border-box;
 	position: relative;
 	user-select: none;
-	width: 100%;
+	// width: 100%;
 	height: 100%;
 	overflow: hidden;
 	border: 1px solid #ccc;

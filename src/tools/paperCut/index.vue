@@ -1231,7 +1231,7 @@ function handleHoverChange(hover) {
  .container {
   box-sizing: border-box;
   user-select: none;
-  width: 100%;
+  // width: 100%;
   height: 100%;
   border: 1px solid #073dba;
   border-radius: 8px;
