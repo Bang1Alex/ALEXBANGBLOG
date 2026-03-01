@@ -29,9 +29,9 @@ const handleClick = ({ key }: { key: string }) => {
         class="menu"
         @click="handleClick"
       >
-        <a-menu-item key="/">Home</a-menu-item>
-        <a-menu-item key="/blog">Blog</a-menu-item>
-        <a-menu-item key="/tools">Tools</a-menu-item>
+        <a-menu-item key="/">首页</a-menu-item>
+        <a-menu-item key="/blog">博客</a-menu-item>
+        <a-menu-item key="/tools">工具</a-menu-item>
       </a-menu>
     </a-layout-header>
     

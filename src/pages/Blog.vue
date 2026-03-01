@@ -64,7 +64,7 @@ const goToPost = (slug: string) => {
 
 <template>
   <div class="blog-container">
-    <h2>Latest Articles</h2>
+    <h2>最新文章</h2>
     <div class="post-list">
       <a-card v-for="post in posts" :key="post.slug" class="post-card" hoverable @click="goToPost(post.slug)">
         <template #title>

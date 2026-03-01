@@ -3,32 +3,38 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import HuarongRoad from '@/tools/HuarongRoad/index.vue'
 import PaperCut from '@/tools/paperCut/index.vue'
+import MindMap from '@/tools/MindMap/index.vue'
+
+
 
 const route = useRoute()
 
 // Map tool IDs to components
 const toolMap: Record<string, any> = {
   HuarongRoad,
-  paperCut: PaperCut
+  PaperCut,
+  MindMap
 }
 
 const currentToolId = computed(() => route.params.id as string)
 const currentTool = computed(() => toolMap[currentToolId.value] || null)
+console.log(currentToolId.value);
 
 </script>
 
 <template>
   <div class="tool-detail-container">
     <div class="header">
-      <router-link to="/tools">← Back to Tools</router-link>
-      <h2>{{ currentToolId }}</h2>
+      <router-link to="/tools">← 返回工具列表</router-link>
+      <!-- {{ currentTool}} {{ currentToolId }} -->
+      <h2>{{ currentTool.value?.name || currentToolId }}</h2>
     </div>
     
     <div v-if="currentTool" class="tool-wrapper">
       <component :is="currentTool" />
     </div>
     <div v-else class="not-found">
-      Tool not found.
+      工具未找到
     </div>
   </div>
 </template>

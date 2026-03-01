@@ -142,7 +142,7 @@ const scrollToHeading = (id: string) => {
         <a-skeleton v-if="loading" active :paragraph="{ rows: 5 }" />
         <div v-else class="markdown-body" v-html="renderedContent"></div>
         <div class="back-link">
-          <router-link to="/blog">← Back to Blog</router-link>
+          <router-link to="/blog">← 返回博客列表</router-link>
         </div>
       </div>
       

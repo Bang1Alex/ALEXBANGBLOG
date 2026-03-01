@@ -69,19 +69,20 @@ const goToPost = (slug: string) => {
 // --- Tools Logic ---
 const featuredTools = [
   {
-    id: 'HuarongRoad',
-    name: '华容道',
-    desc: '经典益智游戏，挑战你的逻辑思维。',
-    icon: AppstoreOutlined,
-    color: '#E6A23C'
-  },
-  {
     id: 'paperCut',
     name: '剪纸工具',
     desc: '自由创作剪纸艺术，感受传统文化魅力。',
     icon: ScissorOutlined,
     color: '#F56C6C'
-  }
+  },
+  {
+    id: 'MindMap',
+    name: '思维导图',
+    desc: '基于 Vue.js 框架的思维导图组件，支持创建、编辑、分享和导出思维导图，同时提供了丰富的主题和插件扩展功能',
+    icon: AppstoreOutlined,
+    color: '#E6A23C'
+  },
+  
 ]
 
 const goToTool = (id: string) => {
@@ -94,7 +95,7 @@ const goToTool = (id: string) => {
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-content">
-        <h1 class="hero-title">Welcome to <span class="highlight">Alex's Blog</span></h1>
+        <h1 class="hero-title">欢迎来到 <span class="highlight">Alex的博客</span></h1>
         <p class="hero-subtitle">
           探索技术之美，记录成长点滴。这里汇聚了前端技术分享、创意工具开发以及我的思考与实践。
         </p>
@@ -118,7 +119,7 @@ const goToTool = (id: string) => {
       
       <!-- Featured Tools -->
       <section class="section tools-section">
-        <h2 class="section-title">热门工具 / Popular Tools</h2>
+        <h2 class="section-title">热门工具</h2>
         <div class="tools-grid">
           <div 
             v-for="tool in featuredTools" 
@@ -140,7 +141,7 @@ const goToTool = (id: string) => {
 
       <!-- Recent Posts -->
       <section class="section posts-section">
-        <h2 class="section-title">最新文章 / Recent Posts</h2>
+        <h2 class="section-title">最新文章</h2>
         <div class="posts-grid">
           <a-card 
             v-for="post in recentPosts" 
@@ -152,12 +153,12 @@ const goToTool = (id: string) => {
             <template #title>
               <div class="post-header">
                 <span class="post-title">{{ post.title }}</span>
-                <a-tag color="blue">Article</a-tag>
+                <a-tag color="blue">文章</a-tag>
               </div>
             </template>
             <p class="post-summary">{{ post.summary }}</p>
             <div class="post-footer">
-              <span>Read More</span>
+              <span>阅读更多</span>
               <EditOutlined />
             </div>
           </a-card>
