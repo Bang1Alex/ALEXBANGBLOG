@@ -21,7 +21,7 @@ const handleClick = ({ key }: { key: string }) => {
 <template>
   <a-layout class="app-container">
     <a-layout-header class="header">
-      <div class="logo">Alex Blog</div>
+      <div class="logo" @click="handleClick({ key: '/' })">Alex Blog</div>
       <a-menu
         v-model:selectedKeys="selectedKeys"
         mode="horizontal"
@@ -70,6 +70,7 @@ const handleClick = ({ key }: { key: string }) => {
   color: #1890ff;
   margin-right: 20px;
   flex-shrink: 0;
+  cursor: pointer;
 }
 
 .menu {
@@ -82,7 +83,7 @@ const handleClick = ({ key }: { key: string }) => {
   flex: 1;
   padding: 20px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   background: #fff; 
 }

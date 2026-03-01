@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import HuarongRoad from '@/tools/HuarongRoad/index.vue'
 import PaperCut from '@/tools/paperCut/index.vue'
 import MindMap from '@/tools/MindMap/index.vue'
+import MatchstickChallengeGame from '@/tools/MatchstickChallengeGame/index.vue'
+import NineLinkedRings from '@/tools/NineLinkedRings/index.vue'
 
 
 
@@ -13,7 +15,9 @@ const route = useRoute()
 const toolMap: Record<string, any> = {
   HuarongRoad,
   PaperCut,
-  MindMap
+  MindMap,
+  MatchstickChallengeGame,
+  NineLinkedRings
 }
 
 const currentToolId = computed(() => route.params.id as string)
@@ -41,7 +45,7 @@ console.log(currentToolId.value);
 
 <style lang="less" scoped>
 .tool-detail-container {
-  max-width: 1000px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   

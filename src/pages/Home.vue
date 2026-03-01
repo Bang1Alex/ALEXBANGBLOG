@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined, ArrowRightOutlined } from '@ant-design/icons-vue'
+import { EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined, ArrowRightOutlined, FireOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 
@@ -82,6 +82,13 @@ const featuredTools = [
     icon: AppstoreOutlined,
     color: '#E6A23C'
   },
+  {
+    id: 'MatchstickChallengeGame',
+    name: '火柴棒挑战',
+    desc: '基于 Konva.js 引擎开发的益智游戏，通过移动火柴棒修复数学等式，锻炼逻辑思维与空间想象力',
+    icon: FireOutlined,
+    color: '#fa541c'
+  }
   
 ]
 

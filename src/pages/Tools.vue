@@ -13,7 +13,14 @@ const tools = ref([
     icon:'ScissorOutlined',
     color: '#ff4d4f'
   }, 
-  { 
+  {
+    id:'MindMap',
+    name:'思维导图',
+    description:'一款基于 Vue.js 框架的思维导图组件，支持创建、编辑、分享和导出思维导图，同时提供了丰富的主题和插件扩展功能',
+    icon:'DeploymentUnitOutlined',
+    color: '#1890ff'
+  },
+   { 
     id: 'HuarongRoad', 
     name: '华容道', 
     description: '基于 Konva.js 交互引擎 开发 “华容道”益智互动组件 ，实现 拖拽解谜、智能吸附、步数记录与路径回溯 ，助力 学生逻辑思维训练与趣味化学习',
@@ -21,12 +28,19 @@ const tools = ref([
     color: '#fa8c16'
   },
   {
-    id:'MindMap',
-    name:'思维导图',
-    description:'一款基于 Vue.js 框架的思维导图组件，支持创建、编辑、分享和导出思维导图，同时提供了丰富的主题和插件扩展功能',
-    icon:'DeploymentUnitOutlined',
-    color: '#1890ff'
-  }
+    id:'MatchstickChallengeGame',
+    name:'火柴棒挑战',
+    description:'基于 Konva.js 引擎开发的益智游戏，通过移动火柴棒修复数学等式，锻炼逻辑思维与空间想象力',
+    icon:'FireOutlined',
+    color: '#fa541c'
+  },
+  {
+    id:'NineLinkedRings',
+    name:'九宫格链接环',
+    description:'一款基于 Konva.js 引擎开发的益智游戏，通过拖动链接环，将相同数字的环连接起来，最终形成完整的九宫格',
+    icon:'FireOutlined',
+    color: '#fa541c'
+  },
 ])
 
 const openTool = (id: string) => {

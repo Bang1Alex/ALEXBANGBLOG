@@ -15,7 +15,8 @@
     "lint:fix": "eslint . --ext .ts,.vue --fix"
   },
   "dependencies": {
-     "@ckpack/vue-color": "^1.6.0",
+    "konva": "^10.0.12",
+    "@ckpack/vue-color": "^1.6.0",
     "core-js": "^3.6.5",
     "simple-mind-map": "^0.14.0-fix.1",
     "simple-mind-map-plugin-themes": "^1.0.1",
