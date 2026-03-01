@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/reset.css'
+import * as AntdIcons from '@ant-design/icons-vue'
 import App from './App.vue'
 import router from './router'
 import './styles/global.less'
@@ -13,10 +13,10 @@ console.log(1);
 
 app.use(createPinia())
 app.use(router)
-app.use(ElementPlus)
+app.use(Antd)
 
 // Register all icons
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+for (const [key, component] of Object.entries(AntdIcons)) {
   app.component(key, component)
 }
 

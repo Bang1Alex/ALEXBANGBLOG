@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Edit, Monitor, Scissor, Grid } from '@element-plus/icons-vue'
+import { EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined, ArrowRightOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 
@@ -72,14 +72,14 @@ const featuredTools = [
     id: 'HuarongRoad',
     name: '华容道',
     desc: '经典益智游戏，挑战你的逻辑思维。',
-    icon: Grid,
+    icon: AppstoreOutlined,
     color: '#E6A23C'
   },
   {
     id: 'paperCut',
     name: '剪纸工具',
     desc: '自由创作剪纸艺术，感受传统文化魅力。',
-    icon: Scissor,
+    icon: ScissorOutlined,
     color: '#F56C6C'
   }
 ]
@@ -99,12 +99,12 @@ const goToTool = (id: string) => {
           探索技术之美，记录成长点滴。这里汇聚了前端技术分享、创意工具开发以及我的思考与实践。
         </p>
         <div class="hero-actions">
-          <el-button type="primary" size="large" round @click="router.push('/blog')">
-            <el-icon class="mr-2"><Edit /></el-icon> 阅读文章
-          </el-button>
-          <el-button size="large" round @click="router.push('/tools')">
-            <el-icon class="mr-2"><Monitor /></el-icon> 体验工具
-          </el-button>
+          <a-button type="primary" size="large" shape="round" @click="router.push('/blog')">
+            <template #icon><EditOutlined /></template> 阅读文章
+          </a-button>
+          <a-button size="large" shape="round" @click="router.push('/tools')">
+            <template #icon><MonitorOutlined /></template> 体验工具
+          </a-button>
         </div>
       </div>
       <div class="hero-decoration">
@@ -127,13 +127,13 @@ const goToTool = (id: string) => {
             @click="goToTool(tool.id)"
           >
             <div class="tool-icon" :style="{ backgroundColor: tool.color }">
-              <el-icon><component :is="tool.icon" /></el-icon>
+              <component :is="tool.icon" />
             </div>
             <div class="tool-info">
               <h3>{{ tool.name }}</h3>
               <p>{{ tool.desc }}</p>
             </div>
-            <div class="tool-arrow">→</div>
+            <div class="tool-arrow"><ArrowRightOutlined /></div>
           </div>
         </div>
       </section>
@@ -142,28 +142,28 @@ const goToTool = (id: string) => {
       <section class="section posts-section">
         <h2 class="section-title">最新文章 / Recent Posts</h2>
         <div class="posts-grid">
-          <el-card 
+          <a-card 
             v-for="post in recentPosts" 
             :key="post.slug" 
             class="post-card" 
-            shadow="hover"
+            hoverable
             @click="goToPost(post.slug)"
           >
-            <template #header>
+            <template #title>
               <div class="post-header">
                 <span class="post-title">{{ post.title }}</span>
-                <el-tag size="small" effect="plain">Article</el-tag>
+                <a-tag color="blue">Article</a-tag>
               </div>
             </template>
             <p class="post-summary">{{ post.summary }}</p>
             <div class="post-footer">
               <span>Read More</span>
-              <el-icon><Edit /></el-icon>
+              <EditOutlined />
             </div>
-          </el-card>
+          </a-card>
         </div>
         <div class="more-posts">
-          <el-button text bg @click="router.push('/blog')">查看更多文章</el-button>
+          <a-button type="text" @click="router.push('/blog')">查看更多文章</a-button>
         </div>
       </section>
 
@@ -430,7 +430,7 @@ const goToTool = (id: string) => {
     .hero-actions {
       flex-direction: column;
       
-      .el-button {
+      .ant-btn {
         width: 100%;
         margin-left: 0 !important;
       }

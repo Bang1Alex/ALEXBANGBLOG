@@ -4,49 +4,45 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-const activeIndex = ref('/')
+const selectedKeys = ref<string[]>(['/'])
 
 watch(() => route.path, (newPath) => {
   // Simple matching to highlight correct menu item
-  if (newPath.startsWith('/blog')) activeIndex.value = '/blog'
-  else if (newPath.startsWith('/tools')) activeIndex.value = '/tools'
-  else activeIndex.value = '/'
+  if (newPath.startsWith('/blog')) selectedKeys.value = ['/blog']
+  else if (newPath.startsWith('/tools')) selectedKeys.value = ['/tools']
+  else selectedKeys.value = ['/']
 })
 
-const handleSelect = (key: string) => {
-  activeIndex.value = key
+const handleClick = ({ key }: { key: string }) => {
   router.push(key)
 }
 </script>
 
 <template>
-  <el-container class="app-container">
-    <el-header>
-      <el-menu
-        :default-active="activeIndex"
-        class="el-menu-demo"
+  <a-layout class="app-container">
+    <a-layout-header class="header">
+      <div class="logo">Alex Blog</div>
+      <a-menu
+        v-model:selectedKeys="selectedKeys"
         mode="horizontal"
-        :ellipsis="false"
-        @select="handleSelect"
+        theme="light"
+        class="menu"
+        @click="handleClick"
       >
-        <el-menu-item index="/">
-          <div class="logo">Alex Blog</div>
-        </el-menu-item>
-        <div class="flex-grow" />
-        <el-menu-item index="/">Home</el-menu-item>
-        <el-menu-item index="/blog">Blog</el-menu-item>
-        <el-menu-item index="/tools">Tools</el-menu-item>
-      </el-menu>
-    </el-header>
+        <a-menu-item key="/">Home</a-menu-item>
+        <a-menu-item key="/blog">Blog</a-menu-item>
+        <a-menu-item key="/tools">Tools</a-menu-item>
+      </a-menu>
+    </a-layout-header>
     
-    <el-main>
+    <a-layout-content class="main-content">
       <router-view />
-    </el-main>
+    </a-layout-content>
     
-    <el-footer>
+    <a-layout-footer class="footer">
       <p>&copy; 2023 Alex Blog</p>
-    </el-footer>
-  </el-container>
+    </a-layout-footer>
+  </a-layout>
 </template>
 
 <style scoped>
@@ -56,35 +52,47 @@ const handleSelect = (key: string) => {
   flex-direction: column;
 }
 
-.flex-grow {
-  flex-grow: 1;
+.header {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  z-index: 1000;
+  position: sticky;
+  top: 0;
+  width: 100%;
 }
 
 .logo {
   font-weight: bold;
   font-size: 1.2rem;
-  color: #409EFF;
+  color: #1890ff;
+  margin-right: 20px;
+  flex-shrink: 0;
 }
 
-.el-header {
-  padding: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  z-index: 1000;
-  position: sticky;
-  top: 0;
-  background-color: #fff;
-  width: 100%;
+.menu {
+  flex: 1;
+  border-bottom: none;
+  justify-content: flex-end;
 }
 
-.el-main {
+.main-content {
   flex: 1;
   padding: 20px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
+  background: #fff; 
 }
 
-.el-footer {
+/* Ant Design Layout Content usually has grey background, override if needed */
+:deep(.ant-layout-content) {
+  background: #fff;
+}
+
+.footer {
   text-align: center;
   color: #999;
   padding: 20px;

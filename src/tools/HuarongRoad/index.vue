@@ -79,7 +79,7 @@ onUnmounted(() => {
     </div>
     <div class="controls">
       <p>Click block to select, use Arrow keys to move.</p>
-      <el-button type="primary" @click="blocks = JSON.parse(JSON.stringify(initialBlocks))">Reset</el-button>
+      <a-button type="primary" @click="blocks = JSON.parse(JSON.stringify(initialBlocks))">Reset</a-button>
     </div>
   </div>
 </template>
@@ -87,8 +87,8 @@ onUnmounted(() => {
 <style src="./style.less" scoped></style>
 <style scoped>
 .block.selected {
-  border: 3px solid #409EFF !important;
-  box-shadow: 0 0 15px rgba(64, 158, 255, 0.6) !important;
+  border: 3px solid #1677ff !important;
+  box-shadow: 0 0 15px rgba(24, 144, 255, 0.6) !important;
   z-index: 10;
 }
 </style>

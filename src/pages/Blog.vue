@@ -66,14 +66,14 @@ const goToPost = (slug: string) => {
   <div class="blog-container">
     <h2>Latest Articles</h2>
     <div class="post-list">
-      <el-card v-for="post in posts" :key="post.slug" class="post-card" shadow="hover" @click="goToPost(post.slug)">
-        <template #header>
+      <a-card v-for="post in posts" :key="post.slug" class="post-card" hoverable @click="goToPost(post.slug)">
+        <template #title>
           <div class="card-header">
             <span>{{ post.title }}</span>
           </div>
         </template>
         <div class="summary">{{ post.summary }}</div>
-      </el-card>
+      </a-card>
     </div>
   </div>
 </template>

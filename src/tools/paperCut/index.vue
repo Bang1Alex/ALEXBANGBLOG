@@ -1153,24 +1153,24 @@ function handleHoverChange(hover) {
 <template>
  <div class="container" id="container">
     <div class="tools">
-      <div class="row"> <el-button @click="undo"><undo-outlined />撤销</el-button>
-        <el-button @click="redo"><redo-outlined />重做</el-button>
-        <el-button @click="clearCanvas"><delete-outlined />清空</el-button>
-        <el-button :disabled="!isVisibleExpand" :type="currentTool === 'scissors' ? 'primary' : 'default'"
+      <div class="row"> <a-button @click="undo"><undo-outlined />撤销</a-button>
+        <a-button @click="redo"><redo-outlined />重做</a-button>
+        <a-button @click="clearCanvas"><delete-outlined />清空</a-button>
+        <a-button :disabled="!isVisibleExpand" :type="currentTool === 'scissors' ? 'primary' : 'default'"
           @click="setTool('scissors')">
           <ScissorOutlined /> 剪刀
-        </el-button>
-        <el-button :disabled="!isVisibleExpand" :type="currentTool === 'pen' ? 'primary' : 'default'"
+        </a-button>
+        <a-button :disabled="!isVisibleExpand" :type="currentTool === 'pen' ? 'primary' : 'default'"
           @click="setTool('pen')">
           <EditOutlined /> 画笔
-        </el-button>
-        <el-button :disabled="!isVisibleExpand" :type="currentTool === 'eraser' ? 'primary' : 'default'"
+        </a-button>
+        <a-button :disabled="!isVisibleExpand" :type="currentTool === 'eraser' ? 'primary' : 'default'"
           @click="setTool('eraser')">
           <ClearOutlined /> 橡皮
-        </el-button>
+        </a-button>
 
-        <el-popover title="添加图形" placement="bottomRight" :visible="clicked" trigger="click"
-          @visibleChange="handleHoverChange">
+        <a-popover title="添加图形" placement="bottomRight" :open="clicked" trigger="click"
+          @openChange="handleHoverChange">
           <template #content>
             <div class="box-shape">
               <div class="img-icon" :class="currentShapeType == value.type ? 'active' : ''" v-for="value in iconLists" :key="value.type"
@@ -1180,41 +1180,41 @@ function handleHoverChange(hover) {
               </div>
             </div>
           </template>
-          <el-button :disabled="!isVisibleExpand" :type="currentTool === 'shapes' ? 'primary' : 'default'"
+          <a-button :disabled="!isVisibleExpand" :type="currentTool === 'shapes' ? 'primary' : 'default'"
             @click="setTool('shapes')">
             <windows-outlined /> 图形
-          </el-button>
-        </el-popover>
+          </a-button>
+        </a-popover>
 
 
       </div>
       <div class="row">
-        <el-button :disabled="!isCutting || isAnimating" :type="shapeMode === 'normal' ? 'primary' : 'default'"
+        <a-button :disabled="!isCutting || isAnimating" :type="shapeMode === 'normal' ? 'primary' : 'default'"
           @click="setShapeMode('normal')">
           普通模式
-        </el-button>
-        <el-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'symmetry')"
+        </a-button>
+        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'symmetry')"
           :type="shapeMode === 'symmetry' ? 'primary' : 'default'" @click="setShapeMode('symmetry')">
           对折模式
-        </el-button>
-        <el-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'fourCorners')"
+        </a-button>
+        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'fourCorners')"
           :type="shapeMode === 'fourCorners' ? 'primary' : 'default'" @click="setShapeMode('fourCorners')">
           四折模式
-        </el-button>
-        <el-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'sixCorners')"
+        </a-button>
+        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'sixCorners')"
           :type="shapeMode === 'sixCorners' ? 'primary' : 'default'" @click="setShapeMode('sixCorners')">
           六折模式
-        </el-button>
-        <el-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'fiveCorners')"
+        </a-button>
+        <a-button :disabled="!isCutting || isAnimating" v-if="paperMode.find(it => it == 'fiveCorners')"
           :type="shapeMode === 'fiveCorners' ? 'primary' : 'default'" @click="setShapeMode('fiveCorners')">
           五折模式
-        </el-button>
-        <el-button :disabled="isCutting" @click="cut">裁切</el-button>
-        <el-button :disabled="!isCutting" v-if="isVisibleExpand" @click="expandPaper">展开</el-button>
+        </a-button>
+        <a-button :disabled="isCutting" @click="cut">裁切</a-button>
+        <a-button :disabled="!isCutting" v-if="isVisibleExpand" @click="expandPaper">展开</a-button>
         
-        <el-button :disabled="!isCutting || isAnimating" v-else @click="foldPaper">折叠</el-button>
-         <el-switch v-model:checked="foldMarkVisible" checked-children="折痕开" un-checked-children="折痕关" />
-        <!-- <el-button :disabled="!isCutting || isAnimating" @click="submit">提交</el-button> -->
+        <a-button :disabled="!isCutting || isAnimating" v-else @click="foldPaper">折叠</a-button>
+         <a-switch v-model:checked="foldMarkVisible" checked-children="折痕开" un-checked-children="折痕关" />
+        <!-- <a-button :disabled="!isCutting || isAnimating" @click="submit">提交</a-button> -->
       </div>
     </div>
     <canvas class="editor-container" ref="editorContainerRef"></canvas>

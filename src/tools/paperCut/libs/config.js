@@ -18,57 +18,59 @@ export const bastPath  = {
   fiveCorners: "M 400 250L 147.9852978095895 121.5920957266308L 164.88589905486 173.6067978295L 120.6395506519 205.7536516755L 152.7864044901 250L 120.6395506762313 294.2463484 Z",
  sixCorners: "M 200 50 L 284.5299461738 50 L 326.794919267 -23.2050807 L 400 250 Z"
 }
+const getAssetUrl = (name) => new URL(`../svg/${name}`, import.meta.url).href
+
 export const listIcons = [
   {
-    url: "/controls/paperCut/resources/svg/select_icon.svg",
+    url: getAssetUrl("select_icon.svg"),
     type: "select_icon",
   },
   {
-    url: "/controls/paperCut/resources/svg/圆.svg",
+    url: getAssetUrl("圆.svg"),
     type: "circle",
   },
   {
-    url: "/controls/paperCut/resources/svg/椭圆.svg",
+    url: getAssetUrl("椭圆.svg"),
     type: "ellipse",
   },
   {
-    url: "/controls/paperCut/resources/svg/柳叶.svg",
+    url: getAssetUrl("柳叶.svg"),
     type: "salixLeaf",
   },
   {
-    url: "/controls/paperCut/resources/svg/水滴.svg",
+    url: getAssetUrl("水滴.svg"),
     type: "waterDrop",
   },
   {
-    url: "/controls/paperCut/resources/svg/单牙纹.svg",
+    url: getAssetUrl("单牙纹.svg"),
     type: "singleDentition",
   },
   {
-    url: "/controls/paperCut/resources/svg/爱心.svg",
+    url: getAssetUrl("爱心.svg"),
     type: "heart",
   },
   {
-    url: "/controls/paperCut/resources/svg/羽毛.svg",
+    url: getAssetUrl("羽毛.svg"),
     type: "feather",
   },
   {
-    url: "/controls/paperCut/resources/svg/月亮.svg",
+    url: getAssetUrl("月亮.svg"),
     type: "moon",
   },
   {
-    url: "/controls/paperCut/resources/svg/逗号.svg",
+    url: getAssetUrl("逗号.svg"),
     type: "commaPattern",
   },
   {
-    url: "/controls/paperCut/resources/svg/菱形.svg",
+    url: getAssetUrl("菱形.svg"),
     type: "diamond",
   },
   {
-    url: "/controls/paperCut/resources/svg/shape1.svg",
+    url: getAssetUrl("shape1.svg"),
     type: "shape1",
   },
   {
-    url: "/controls/paperCut/resources/svg/shape2.svg",
+    url: getAssetUrl("shape2.svg"),
     type: "shape2",
   },
 ]

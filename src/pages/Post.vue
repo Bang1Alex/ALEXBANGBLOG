@@ -139,7 +139,7 @@ const scrollToHeading = (id: string) => {
     <div class="post-layout">
       <!-- Main Content -->
       <div class="post-container">
-        <el-skeleton v-if="loading" :rows="5" animated />
+        <a-skeleton v-if="loading" active :paragraph="{ rows: 5 }" />
         <div v-else class="markdown-body" v-html="renderedContent"></div>
         <div class="back-link">
           <router-link to="/blog">← Back to Blog</router-link>
@@ -165,7 +165,7 @@ const scrollToHeading = (id: string) => {
     </div>
     
     <!-- Back to Top -->
-    <el-backtop :right="40" :bottom="40" />
+    <a-back-top :style="{ right: '40px', bottom: '40px' }" />
   </div>
 </template>
 
