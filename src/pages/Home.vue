@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { FireOutlined, EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined } from '@ant-design/icons-vue'
+import { FireOutlined, EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined, MacCommandOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 
