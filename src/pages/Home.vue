@@ -69,13 +69,6 @@ const goToPost = (slug: string) => {
 // --- Tools Logic ---
 const featuredTools = [
   {
-    id: 'HuarongRoad',
-    name: '华容道',
-    desc: '经典益智游戏，挑战你的逻辑思维。',
-    icon: AppstoreOutlined,
-    color: '#E6A23C'
-  },
-  {
     id: 'PaperCut',
     name: '剪纸工具',
     desc: '自由创作剪纸艺术，感受传统文化魅力。',

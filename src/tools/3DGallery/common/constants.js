@@ -1,0 +1,1 @@
+export const ETB_URL = '/etb/sample'

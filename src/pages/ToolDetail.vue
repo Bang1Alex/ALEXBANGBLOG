@@ -7,7 +7,7 @@ import PaperCut from '@/tools/paperCut/index.vue'
 import MindMap from '@/tools/MindMap/index.vue'
 import MatchstickChallengeGame from '@/tools/MatchstickChallengeGame/index.vue'
 import NineLinkedRings from '@/tools/NineLinkedRings/index.vue'
-
+import Gallery from '@/tools/3DGallery/index.vue'
 
 
 const route = useRoute()
@@ -18,7 +18,8 @@ const toolMap: Record<string, any> = {
   PaperCut,
   MindMap,
   MatchstickChallengeGame,
-  NineLinkedRings
+  NineLinkedRings,
+  Gallery
 }
 
 const currentToolId = computed(() => route.params.id as string)

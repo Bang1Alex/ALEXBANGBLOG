@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const tools = ref([
- 
+
   {
     id:'PaperCut',
     name:'剪纸',
@@ -41,6 +41,13 @@ const tools = ref([
     icon:'MonitorOutlined',
     color: '#8b4513'
   },
+  {
+    id:'Gallery',
+    name:'3D展馆',
+    description:'基于 Three.js 3D渲染引擎 开发 3D作品画廊与统计可视化工具 ，实现 学生作业/作品的沉浸式3D展示与互动 ，助力 教学成果生动化呈现与学生作品互评 ',
+    icon:'MacCommandOutlined',
+    color: '#8b4513'
+  }
 ])
 
 const openTool = (id: string) => {
