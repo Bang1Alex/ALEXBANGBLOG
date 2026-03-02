@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined, ArrowRightOutlined, FireOutlined } from '@ant-design/icons-vue'
+import { FireOutlined, EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 
@@ -69,6 +69,13 @@ const goToPost = (slug: string) => {
 // --- Tools Logic ---
 const featuredTools = [
   {
+    id: 'HuarongRoad',
+    name: '华容道',
+    desc: '经典益智游戏，挑战你的逻辑思维。',
+    icon: AppstoreOutlined,
+    color: '#E6A23C'
+  },
+  {
     id: 'PaperCut',
     name: '剪纸工具',
     desc: '自由创作剪纸艺术，感受传统文化魅力。',
@@ -126,7 +133,7 @@ const goToTool = (id: string) => {
       
       <!-- Featured Tools -->
       <section class="section tools-section">
-        <h2 class="section-title">热门工具</h2>
+        <h2 class="section-title">热门工具 / Popular Tools</h2>
         <div class="tools-grid">
           <div 
             v-for="tool in featuredTools" 
@@ -141,14 +148,14 @@ const goToTool = (id: string) => {
               <h3>{{ tool.name }}</h3>
               <p>{{ tool.desc }}</p>
             </div>
-            <div class="tool-arrow"><ArrowRightOutlined /></div>
+            <div class="tool-arrow">→</div>
           </div>
         </div>
       </section>
 
       <!-- Recent Posts -->
       <section class="section posts-section">
-        <h2 class="section-title">最新文章</h2>
+        <h2 class="section-title">最新文章 / Recent Posts</h2>
         <div class="posts-grid">
           <a-card 
             v-for="post in recentPosts" 
@@ -160,12 +167,12 @@ const goToTool = (id: string) => {
             <template #title>
               <div class="post-header">
                 <span class="post-title">{{ post.title }}</span>
-                <a-tag color="blue">文章</a-tag>
+                <a-tag color="blue">Article</a-tag>
               </div>
             </template>
             <p class="post-summary">{{ post.summary }}</p>
             <div class="post-footer">
-              <span>阅读更多</span>
+              <span>Read More</span>
               <EditOutlined />
             </div>
           </a-card>
@@ -226,10 +233,6 @@ const goToTool = (id: string) => {
       display: flex;
       justify-content: center;
       gap: 20px;
-      
-      .mr-2 {
-        margin-right: 8px;
-      }
     }
   }
   

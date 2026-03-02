@@ -38,7 +38,7 @@ const md = new MarkdownIt({
   md.use(anchor, {
     permalink: anchor.permalink.headerLink(),
     slugify: (s) => encodeURIComponent(String(s).trim().toLowerCase().replace(/\s+/g, '-')),
-    callback: (token, { slug, title }) => {
+    callback: () => {
       // console.log('Anchor generated:', slug, title)
     }
   })

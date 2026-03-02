@@ -38,8 +38,8 @@ const tools = ref([
     id:'NineLinkedRings',
     name:'九宫格链接环',
     description:'一款基于 Konva.js 引擎开发的益智游戏，通过拖动链接环，将相同数字的环连接起来，最终形成完整的九宫格',
-    icon:'FireOutlined',
-    color: '#fa541c'
+    icon:'MonitorOutlined',
+    color: '#8b4513'
   },
 ])
 
