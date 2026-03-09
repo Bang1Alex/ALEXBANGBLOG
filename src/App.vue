@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import StarBackground from './components/StarBackground.vue'
-import Live2D from './components/Live2D.vue'
+
 
 const router = useRouter()
 const route = useRoute()
@@ -23,7 +23,7 @@ const handleClick = ({ key }: { key: string }) => {
 <template>
   <StarBackground />
   <a-layout class="app-container">
-    <Live2D />
+  
     <a-layout-header class="header">
       <div class="logo" @click="handleClick({ key: '/' })">Alex Blog</div>
       <a-menu

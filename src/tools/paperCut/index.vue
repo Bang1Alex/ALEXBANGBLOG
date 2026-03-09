@@ -18,7 +18,7 @@ import {
 import { Sketch } from '@ckpack/vue-color';
 
 const currentTool = ref<'scissors' | 'pen' | 'eraser' | 'shapes' | ''>('scissors');
-const shapeMode = ref<'normal' | 'symmetry' | 'fourCorners' | 'sixCorners' | 'fiveCorners'>('normal')
+const shapeMode = ref<'normal' | 'symmetry' | 'fourCorners' | 'sixCorners' | 'fiveCorners'>('sixCorners')
 const paperColor = ref("rgba(165, 27, 42, 1)");
 const brushColor = ref("rgba(165, 27, 42, 1)");
 const paperMode = ["symmetry","fourCorners","sixCorners","fiveCorners"];
@@ -1291,14 +1291,15 @@ function handleHoverChange(hover) {
       <div class="tool-group">
         <div class="group-title">操作</div>
         <div class="group-content">
-          <a-button type="primary" :disabled="isCutting" @click="cut" block>
-            <ScissorOutlined /> 裁切
-          </a-button>
+        
           <a-button v-if="isVisibleExpand" :disabled="!isCutting" @click="expandPaper" block>
             <ExpandAltOutlined /> 展开
           </a-button>
           <a-button v-else :disabled="!isCutting || isAnimating" @click="foldPaper" block>
           折叠
+          </a-button>
+            <a-button type="primary" :disabled="isCutting" @click="cut" block>
+            <ScissorOutlined /> 裁切
           </a-button>
           <div class="switch-wrapper">
             <a-switch v-model:checked="foldMarkVisible" checked-children="折痕开" un-checked-children="折痕关" />
