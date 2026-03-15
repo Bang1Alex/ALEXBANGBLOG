@@ -210,14 +210,22 @@ const goToTool = (id: string) => {
             class="tool-card"
             @click="goToTool(tool.id)"
           >
-            <div class="tool-icon" :style="{ backgroundColor: tool.color }">
-              <component :is="tool.icon" />
+           
+             <div class="content-animation">
+                <div class="back">
+                    <div class="back-content">
+                        <div class="tool-icon" :style="{ backgroundColor: tool.color }">
+                          <component :is="tool.icon" />
+                        </div>
+                        <div class="tool-info">
+                          <h3>{{ tool.name }}</h3>
+                          <p>{{ tool.desc }}</p>
+                        </div>
+                        <div class="tool-arrow">→</div>
+
+                    </div>
+                </div>
             </div>
-            <div class="tool-info">
-              <h3>{{ tool.name }}</h3>
-              <p>{{ tool.desc }}</p>
-            </div>
-            <div class="tool-arrow">→</div>
           </div>
         </div>
       </section>
@@ -446,9 +454,8 @@ const goToTool = (id: string) => {
   gap: 24px;
   
   .tool-card {
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 20px;
-    padding: 28px;
+        border-radius: 7px;
+    /* padding: 28px; */
     display: flex;
     align-items: center;
     gap: 24px;
@@ -489,53 +496,7 @@ const goToTool = (id: string) => {
       }
     }
     
-    .tool-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 32px;
-      flex-shrink: 0;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      z-index: 2;
-    }
-    
-    .tool-info {
-      flex: 1;
-      
-      h3 {
-        margin: 0 0 8px;
-        font-size: 1.35rem;
-        color: #1a1a2e;
-        font-weight: 700;
-        letter-spacing: -0.3px;
-      }
-      
-      p {
-        margin: 0;
-        font-size: 0.95rem;
-        color: #6b7280;
-        line-height: 1.6;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-    }
-    
-    .tool-arrow {
-      font-size: 1.8rem;
-      color: #d1d5db;
-      transition: all 0.3s;
-      font-weight: 300;
-      position: relative;
-      z-index: 2;
-    }
+  
   }
 }
 
@@ -808,4 +769,123 @@ const goToTool = (id: string) => {
     }
   }
 }
+
+  .content-animation {
+            width: 100%;
+            height: 180px;
+            transform-style: preserve-3d;
+            transition: transform 300ms;
+            box-shadow: 0px 0px 10px 1px #000000ee;
+            border-radius: 5px;
+               .back {
+            background-color: #fafafb;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .back {
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .back::before {
+            position: absolute;
+    content: ' ';
+    display: block;
+    width: 175px;
+    height: 237%;
+    background: linear-gradient(90deg, transparent, #e03636, #ff66f5, #6666ff, #66daff, transparent);
+    animation: rotation_481-933e9cdf 5000ms infinite linear
+        }
+
+        .back-content {
+            position: absolute;
+            width: 97%;
+            height: 97%;
+            background-color: #fbfbfc;
+            border-radius: 5px;
+            color: white;
+            display: flex;
+            // flex-direction: column;
+            padding: 10px;
+            // justify-content: center;
+            align-items: center;
+            gap: 30px;
+
+              .tool-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 32px;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 2;
+    }
+    
+    .tool-info {
+      flex: 1;
+      
+      h3 {
+        margin: 0 0 8px;
+        font-size: 1.35rem;
+        color: #1a1a2e;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #6b7280;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    }
+    
+    .tool-arrow {
+      font-size: 1.8rem;
+      color: #d1d5db;
+      transition: all 0.3s;
+      font-weight: 300;
+      position: relative;
+      z-index: 2;
+    }
+        }
+
+        .card:hover .content {
+            /* transform: rotateY(180deg); */
+        }
+        
+        }
+
+     
+     
+
+        @keyframes rotation_481 {
+            0% {
+                transform: rotateZ(0deg);
+            }
+
+            0% {
+                transform: rotateZ(360deg);
+            }
+        }
 </style>
