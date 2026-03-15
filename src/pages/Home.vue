@@ -33,14 +33,14 @@ const extractSummary = (markdown: string) => {
   let title = ''
   let date = ''
   let tags: string[] = []
-  
+
   if (frontmatterMatch) {
     const frontmatter = frontmatterMatch[0]
     const summaryMatch = frontmatter.match(/summary:\s*(.+)/)
     const titleMatch = frontmatter.match(/title:\s*(.+)/)
     const dateMatch = frontmatter.match(/date:\s*(.+)/)
     const tagsMatch = frontmatter.match(/tags:\s*(.+)/)
-    
+
     if (summaryMatch) summary = summaryMatch[1].trim()
     if (titleMatch) title = titleMatch[1].trim()
     if (dateMatch) date = dateMatch[1].trim()
@@ -53,17 +53,17 @@ const extractSummary = (markdown: string) => {
       }
     }
   }
-  
+
   if (!summary) {
     let cleaned = markdown
     cleaned = cleaned.replace(/^---[\s\S]*?---/g, '')
     cleaned = cleaned.replace(/```[\s\S]*?```/g, '')
     cleaned = cleaned.replace(/!\[.*?\]\(.*?\)/g, '')
-    
+
     const lines = cleaned.split(/\r?\n/)
     const sentences: string[] = []
     let currentParagraph = ''
-    
+
     for (const line of lines) {
       const text = line.trim()
       if (!text) {
@@ -78,13 +78,13 @@ const extractSummary = (markdown: string) => {
       if (text.startsWith('-')) continue
       if (text.startsWith('*')) continue
       if (/^\d+\./.test(text)) continue
-      
+
       currentParagraph += (currentParagraph ? ' ' : '') + text
     }
     if (currentParagraph) {
       sentences.push(currentParagraph)
     }
-    
+
     const fullText = sentences.join(' ')
     if (fullText) {
       const targetLength = 150
@@ -96,7 +96,7 @@ const extractSummary = (markdown: string) => {
         const lastExclamation = truncated.lastIndexOf('！')
         const lastQuestion = truncated.lastIndexOf('？')
         const lastSentenceEnd = Math.max(lastPeriod, lastExclamation, lastQuestion)
-        
+
         if (lastSentenceEnd > targetLength * 0.5) {
           summary = truncated.slice(0, lastSentenceEnd + 1)
         } else {
@@ -110,7 +110,7 @@ const extractSummary = (markdown: string) => {
       }
     }
   }
-  
+
   return { summary, title, date, tags }
 }
 
@@ -165,7 +165,7 @@ const featuredTools = [
     icon: FireOutlined,
     color: '#fa541c'
   }
-  
+
 ]
 
 const goToTool = (id: string) => {
@@ -184,10 +184,14 @@ const goToTool = (id: string) => {
         </p>
         <div class="hero-actions">
           <a-button type="primary" size="large" shape="round" @click="router.push('/blog')">
-            <template #icon><EditOutlined /></template> 阅读文章
+            <template #icon>
+              <EditOutlined />
+            </template> 阅读文章
           </a-button>
           <a-button size="large" shape="round" @click="router.push('/tools')">
-            <template #icon><MonitorOutlined /></template> 体验工具
+            <template #icon>
+              <MonitorOutlined />
+            </template> 体验工具
           </a-button>
         </div>
       </div>
@@ -199,32 +203,27 @@ const goToTool = (id: string) => {
 
     <!-- Content Wrapper -->
     <div class="content-wrapper">
-      
+
       <!-- Featured Tools -->
       <section class="section tools-section">
         <h2 class="section-title">热门工具 / Popular Tools</h2>
         <div class="tools-grid">
-          <div 
-            v-for="tool in featuredTools" 
-            :key="tool.id" 
-            class="tool-card"
-            @click="goToTool(tool.id)"
-          >
-           
-             <div class="content-animation">
-                <div class="back">
-                    <div class="back-content">
-                        <div class="tool-icon" :style="{ backgroundColor: tool.color }">
-                          <component :is="tool.icon" />
-                        </div>
-                        <div class="tool-info">
-                          <h3>{{ tool.name }}</h3>
-                          <p>{{ tool.desc }}</p>
-                        </div>
-                        <div class="tool-arrow">→</div>
+          <div v-for="tool in featuredTools" :key="tool.id" class="tool-card" @click="goToTool(tool.id)">
 
-                    </div>
+            <div class="content-animation">
+              <div class="back">
+                <div class="back-content">
+                  <div class="tool-icon" :style="{ backgroundColor: tool.color }">
+                    <component :is="tool.icon" />
+                  </div>
+                  <div class="tool-info">
+                    <h3>{{ tool.name }}</h3>
+                    <p>{{ tool.desc }}</p>
+                  </div>
+                  <div class="tool-arrow">→</div>
+
                 </div>
+              </div>
             </div>
           </div>
         </div>
@@ -234,12 +233,7 @@ const goToTool = (id: string) => {
       <section class="section posts-section">
         <h2 class="section-title">最新文章 / Recent Posts</h2>
         <div class="posts-list">
-          <div 
-            v-for="post in recentPosts" 
-            :key="post.slug" 
-            class="post-list-item"
-            @click="goToPost(post.slug)"
-          >
+          <div v-for="post in recentPosts" :key="post.slug" class="post-list-item" @click="goToPost(post.slug)">
             <div class="post-list-content">
               <div class="post-list-header">
                 <h3 class="post-list-title">{{ post.title }}</h3>
@@ -285,7 +279,7 @@ const goToTool = (id: string) => {
   text-align: center;
   overflow: hidden;
   margin-bottom: -60px;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -296,20 +290,20 @@ const goToTool = (id: string) => {
     background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     opacity: 0.3;
   }
-  
+
   .hero-content {
     position: relative;
     z-index: 2;
     max-width: 900px;
     margin: 0 auto;
-    
+
     .hero-title {
       font-size: 4rem;
       font-weight: 900;
       margin-bottom: 24px;
       letter-spacing: -2px;
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      
+
       .highlight {
         background: linear-gradient(135deg, #fff 0%, #f0f0f0 50%, #e0e0e0 100%);
         -webkit-background-clip: text;
@@ -317,7 +311,7 @@ const goToTool = (id: string) => {
         background-clip: text;
         position: relative;
         display: inline-block;
-        
+
         &::after {
           content: '';
           position: absolute;
@@ -325,12 +319,12 @@ const goToTool = (id: string) => {
           left: 0;
           right: 0;
           height: 4px;
-          background: linear-gradient(90deg, #fff, rgba(255,255,255,0.3));
+          background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.3));
           border-radius: 2px;
         }
       }
     }
-    
+
     .hero-subtitle {
       font-size: 1.4rem;
       color: rgba(255, 255, 255, 0.95);
@@ -339,7 +333,7 @@ const goToTool = (id: string) => {
       font-weight: 400;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
     }
-    
+
     .hero-actions {
       display: flex;
       justify-content: center;
@@ -347,7 +341,7 @@ const goToTool = (id: string) => {
       flex-wrap: wrap;
     }
   }
-  
+
   .hero-decoration {
     position: absolute;
     top: 0;
@@ -356,14 +350,14 @@ const goToTool = (id: string) => {
     height: 100%;
     z-index: 1;
     pointer-events: none;
-    
+
     .circle {
       position: absolute;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 50%, transparent 70%);
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 70%);
       filter: blur(20px);
     }
-    
+
     .circle-1 {
       width: 400px;
       height: 400px;
@@ -371,7 +365,7 @@ const goToTool = (id: string) => {
       left: -100px;
       animation: float 8s ease-in-out infinite;
     }
-    
+
     .circle-2 {
       width: 600px;
       height: 600px;
@@ -379,7 +373,7 @@ const goToTool = (id: string) => {
       right: -150px;
       animation: float 10s ease-in-out infinite reverse;
     }
-    
+
     .circle-3 {
       width: 250px;
       height: 250px;
@@ -391,9 +385,12 @@ const goToTool = (id: string) => {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
+
   50% {
     transform: translateY(-20px) scale(1.05);
   }
@@ -410,7 +407,7 @@ const goToTool = (id: string) => {
 
 .section {
   margin-bottom: 80px;
-  
+
   .section-title {
     font-size: 2rem;
     font-weight: 800;
@@ -419,7 +416,7 @@ const goToTool = (id: string) => {
     position: relative;
     padding-left: 20px;
     letter-spacing: -0.5px;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -432,7 +429,7 @@ const goToTool = (id: string) => {
       border-radius: 3px;
       box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -452,9 +449,9 @@ const goToTool = (id: string) => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
-  
+
   .tool-card {
-        border-radius: 7px;
+    border-radius: 7px;
     /* padding: 28px; */
     display: flex;
     align-items: center;
@@ -465,7 +462,7 @@ const goToTool = (id: string) => {
     border: 1px solid rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -473,30 +470,30 @@ const goToTool = (id: string) => {
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+      background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.5) 50%, transparent 100%);
       transform: translateX(-100%);
       transition: transform 0.6s;
     }
-    
+
     &:hover {
       transform: translateY(-8px) scale(1.02);
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
-      
+
       &::before {
         transform: translateX(100%);
       }
-      
+
       .tool-arrow {
         transform: translateX(8px);
         color: #667eea;
       }
-      
+
       .tool-icon {
         transform: scale(1.1) rotate(5deg);
       }
     }
-    
-  
+
+
   }
 }
 
@@ -505,7 +502,7 @@ const goToTool = (id: string) => {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  
+
   .post-list-item {
     background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
     border-radius: 16px;
@@ -516,7 +513,7 @@ const goToTool = (id: string) => {
     border: 1px solid rgba(255, 255, 255, 0.8);
     position: relative;
     overflow: hidden;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -528,31 +525,31 @@ const goToTool = (id: string) => {
       transform: scaleX(0);
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     &:hover {
       transform: translateX(8px);
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-      
+
       &::before {
         transform: scaleX(1);
       }
-      
+
       .post-list-arrow {
         transform: translateX(4px);
         color: #667eea;
       }
     }
-    
+
     .post-list-content {
       flex: 1;
     }
-    
+
     .post-list-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
-      
+
       .post-list-title {
         margin: 0;
         font-size: 1.25rem;
@@ -561,7 +558,7 @@ const goToTool = (id: string) => {
         letter-spacing: -0.3px;
       }
     }
-    
+
     .post-list-summary {
       color: #4b5563;
       font-size: 0.95rem;
@@ -573,7 +570,7 @@ const goToTool = (id: string) => {
       overflow: hidden;
       font-weight: 400;
     }
-    
+
     .post-list-footer {
       display: flex;
       justify-content: space-between;
@@ -581,27 +578,27 @@ const goToTool = (id: string) => {
       margin-top: 16px;
       padding-top: 16px;
       border-top: 1px solid rgba(0, 0, 0, 0.06);
-      
+
       .post-list-meta {
         display: flex;
         align-items: center;
         gap: 24px;
         flex: 1;
       }
-      
+
       .post-list-tags {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         gap: 8px;
         margin-bottom: 0;
-        
+
         .anticon {
           color: #667eea;
           font-size: 1rem;
           margin-right: 4px;
         }
-        
+
         .ant-tag {
           background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
           border: 1px solid rgba(102, 126, 234, 0.2);
@@ -611,7 +608,7 @@ const goToTool = (id: string) => {
           padding: 4px 12px;
           border-radius: 6px;
           transition: all 0.3s ease;
-          
+
           &:hover {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
             border-color: rgba(102, 126, 234, 0.4);
@@ -619,7 +616,7 @@ const goToTool = (id: string) => {
           }
         }
       }
-      
+
       .post-list-date {
         display: flex;
         align-items: center;
@@ -627,16 +624,16 @@ const goToTool = (id: string) => {
         color: #9ca3af;
         font-size: 0.9rem;
         font-weight: 500;
-        
+
         .anticon {
           font-size: 1rem;
         }
-        
+
         span {
           line-height: 1;
         }
       }
-      
+
       .post-list-arrow {
         font-size: 1.5rem;
         color: #d1d5db;
@@ -651,7 +648,7 @@ const goToTool = (id: string) => {
 .more-posts {
   text-align: center;
   margin-top: 40px;
-  
+
   .ant-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
@@ -663,7 +660,7 @@ const goToTool = (id: string) => {
     border-radius: 30px;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
@@ -677,61 +674,61 @@ const goToTool = (id: string) => {
 @media (max-width: 768px) {
   .hero-section {
     padding: 70px 20px 90px;
-    
+
     .hero-title {
       font-size: 2.5rem;
       letter-spacing: -1px;
     }
-    
+
     .hero-subtitle {
       font-size: 1.15rem;
       margin-bottom: 36px;
     }
-    
+
     .hero-actions {
       flex-direction: column;
-      
+
       .ant-btn {
         width: 100%;
         margin-left: 0 !important;
       }
     }
   }
-  
+
   .section-title {
     font-size: 1.6rem;
     margin-bottom: 28px;
-    
+
     &::before {
       height: 28px;
     }
   }
-  
+
   .tools-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .posts-list {
     gap: 16px;
-    
+
     .post-list-item {
       padding: 20px;
-      
+
       .post-list-title {
         font-size: 1.1rem;
       }
-      
+
       .post-list-summary {
         font-size: 0.9rem;
         -webkit-line-clamp: 3;
       }
-      
+
       .post-list-meta {
         gap: 16px;
         flex-wrap: wrap;
       }
-      
+
       .post-list-tags {
         width: 100%;
         margin-bottom: 8px;
@@ -743,85 +740,94 @@ const goToTool = (id: string) => {
 @media (max-width: 480px) {
   .hero-section {
     padding: 60px 16px 80px;
-    
+
     .hero-title {
       font-size: 2rem;
     }
-    
+
     .hero-subtitle {
       font-size: 1rem;
     }
   }
-  
+
   .content-wrapper {
     padding: 0 16px 40px;
   }
-  
+
   .section {
     margin-bottom: 60px;
   }
-  
+
   .post-list-item {
     padding: 16px !important;
-    
+
     .post-list-title {
       font-size: 1rem !important;
     }
   }
 }
 
-  .content-animation {
-            width: 100%;
-            height: 180px;
-            transform-style: preserve-3d;
-            transition: transform 300ms;
-            box-shadow: 0px 0px 10px 1px #000000ee;
-            border-radius: 5px;
-               .back {
-            background-color: #fafafb;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 5px;
-            overflow: hidden;
-        }
+.content-animation {
+  width: 100%;
+  height: 180px;
+  transform-style: preserve-3d;
+  transition: transform 300ms;
+  box-shadow: 0px 0px 10px 1px #000000ee;
+  border-radius: 5px;
 
-        .back {
-            width: 100%;
-            height: 100%;
-            justify-content: center;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-        }
+  .back {
+    background-color: #fafafb;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 5px;
+    overflow: hidden;
+  }
 
-        .back::before {
-            position: absolute;
+  .back {
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .back::before {
+    position: absolute;
     content: ' ';
     display: block;
     width: 175px;
     height: 237%;
     background: linear-gradient(90deg, transparent, #e03636, #ff66f5, #6666ff, #66daff, transparent);
-    animation: rotation_481-933e9cdf 5000ms infinite linear
-        }
+    animation: rotation_481 5000ms infinite linear
+  }
+  @keyframes rotation_481 {
+  0% {
+    transform: rotateZ(0deg);
+  }
 
-        .back-content {
-            position: absolute;
-            width: 97%;
-            height: 97%;
-            background-color: #fbfbfc;
-            border-radius: 5px;
-            color: white;
-            display: flex;
-            // flex-direction: column;
-            padding: 10px;
-            // justify-content: center;
-            align-items: center;
-            gap: 30px;
+  0% {
+    transform: rotateZ(360deg);
+  }
+}
+  .back-content {
+    position: absolute;
+    width: 97%;
+    height: 97%;
+    background-color: #fbfbfc;
+    border-radius: 5px;
+    color: white;
+    display: flex;
+    // flex-direction: column;
+    padding: 10px;
+    // justify-content: center;
+    align-items: center;
+    gap: 30px;
 
-              .tool-icon {
+    .tool-icon {
       width: 72px;
       height: 72px;
       border-radius: 18px;
@@ -836,10 +842,10 @@ const goToTool = (id: string) => {
       position: relative;
       z-index: 2;
     }
-    
+
     .tool-info {
       flex: 1;
-      
+
       h3 {
         margin: 0 0 8px;
         font-size: 1.35rem;
@@ -847,7 +853,7 @@ const goToTool = (id: string) => {
         font-weight: 700;
         letter-spacing: -0.3px;
       }
-      
+
       p {
         margin: 0;
         font-size: 0.95rem;
@@ -859,7 +865,7 @@ const goToTool = (id: string) => {
         overflow: hidden;
       }
     }
-    
+
     .tool-arrow {
       font-size: 1.8rem;
       color: #d1d5db;
@@ -868,24 +874,16 @@ const goToTool = (id: string) => {
       position: relative;
       z-index: 2;
     }
-        }
+  }
 
-        .card:hover .content {
-            /* transform: rotateY(180deg); */
-        }
-        
-        }
+  .card:hover .content {
+    /* transform: rotateY(180deg); */
+  }
 
-     
-     
+}
 
-        @keyframes rotation_481 {
-            0% {
-                transform: rotateZ(0deg);
-            }
 
-            0% {
-                transform: rotateZ(360deg);
-            }
-        }
+
+
+
 </style>
