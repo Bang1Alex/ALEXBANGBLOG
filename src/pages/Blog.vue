@@ -27,7 +27,11 @@ const getBasename = (filePath: string) => {
 }
 
 const extractMeta = (markdown: string) => {
-  const frontmatterMatch = markdown.match(/^---[\s\S]*?---/)
+  // 第一步：去除开头的不可见字符（空格、换行、制表符、全角空格等）
+  const trimmedMarkdown = markdown.replace(/^\s*/, '');
+  
+  // 第二步：匹配 ---/---- 包裹的 frontmatter（兼容 3 个或 4 个短横线，忽略前后换行）
+  const frontmatterMatch = trimmedMarkdown.match(/^-{3,4}[\s\S]*?^-{3,4}/m);
   let summary = ''
   let title = ''
   let date = ''
@@ -116,15 +120,11 @@ const extractMeta = (markdown: string) => {
 onMounted(async () => {
   const entries = Object.entries(postLoaders)
     .map(([filePath, loader]) => ({ slug: getBasename(filePath), loader }))
-    .sort((a, b) => a.slug.localeCompare(b.slug, 'zh-Hans-CN'))
-  // console.log("entries",entries);
-  posts.value = await Promise.all(
   
+  const postsWithMeta = await Promise.all(
     entries.map(async ({ slug, loader }) => {
       const markdown = await loader()
-
       const { summary, title, date, tags } = extractMeta(markdown)
-      console.log(tags);
       
       return {
         slug,
@@ -135,6 +135,13 @@ onMounted(async () => {
       }
     })
   )
+  
+  posts.value = postsWithMeta.sort((a, b) => {
+    if (!a.date && !b.date) return 0
+    if (!a.date) return 1
+    if (!b.date) return -1
+    return new Date(b.date).getTime() - new Date(a.date).getTime()
+  })
 })
 
 const goToPost = (slug: string) => {

@@ -1,9 +1,9 @@
----
+----
 title: JavaScript 高级部分
 summary: 这是JavaScript高级部分的总结，包括作用域、解构赋值、箭头函数等。
 date: 2024-01-01
 tags: [JavaScript, 高级]
----
+----
 # JavaScript 高级部分
 
 ## JavaScript高级 Day01

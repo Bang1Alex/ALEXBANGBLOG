@@ -94,7 +94,9 @@ const loadPost = async () => {
     }
 
     let markdown = await entry[1]()
-    content.value = markdown.replace(/^---[\s\S]*?---\n?/, '')
+     // 第一步：去除开头的不可见字符（空格、换行、制表符、全角空格等）
+    const trimmedMarkdown = markdown.replace(/^\s*/, '');
+    content.value = trimmedMarkdown.replace(/^----[\s\S]*?----\n?/, '')
   } catch {
     content.value = '# Error loading post'
   } finally {
