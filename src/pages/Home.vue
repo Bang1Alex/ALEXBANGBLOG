@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { FireOutlined, EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined, MacCommandOutlined, CalendarOutlined, TagOutlined } from '@ant-design/icons-vue'
+import { FireOutlined, EditOutlined, MonitorOutlined, ScissorOutlined, AppstoreOutlined, CalendarOutlined, TagOutlined } from '@ant-design/icons-vue'
 
 const router = useRouter()
 
@@ -27,15 +27,6 @@ const getBasename = (filePath: string) => {
   return fileName.replace(/\.md$/i, '')
 }
 
-<<<<<<< HEAD
-// Hardcoded summaries
-const summaries: Record<string, string> = {
-  '浅谈进程 线程 JavaScript 事件循环 (Event Loop)  垃圾回收 异步 promise async awiat,以及他们之间的关系': '深入解析了进程、线程、事件循环、垃圾回收等 JS 核心概念，并阐明了它们在异步编程中的相互关系，帮助读者构建完整的底层知识体系。',
-  '批量删除node_modules': '提供了一个高效的 Windows 批处理脚本，用于快速批量删除项目中的 `node_modules` 文件夹，解决了前端开发中常见的磁盘空间占用问题。',
-  '计算机网络': '系统介绍了 HTTP/HTTPS 协议、TCP/IP 模型、三次握手与四次挥手等网络基础知识，并探讨了跨域、浏览器缓存及多种存储方案，是前端开发者必备的网络知识纲要。',
-  'JavaScript 高级部分': '全面梳理了 JS 高级知识，涵盖作用域、闭包、原型链、深浅拷贝、`this` 指向以及性能优化等方面，旨在帮助开发者夯实内功，提升代码质量。',
-};
-=======
 const extractSummary = (markdown: string) => {
  // 第一步：去除开头的不可见字符（空格、换行、制表符、全角空格等）
   const trimmedMarkdown = markdown.replace(/^\s*/, '');
@@ -128,7 +119,6 @@ const extractSummary = (markdown: string) => {
 
   return { summary, title, date, tags }
 }
->>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
 
 onMounted(async () => {
   const entries = Object.entries(postLoaders)
@@ -140,15 +130,9 @@ onMounted(async () => {
 
   recentPosts.value = await Promise.all(
     latestEntries.map(async ({ slug, loader }) => {
-<<<<<<< HEAD
-      // const markdown = await loader()
-      // const summary = extractSummary(markdown)
-      const summary = summaries[slug] || '暂无摘要。';
-=======
       const markdown = await loader()
       // const summary = extractSummary(markdown)
       const { summary, title, date, tags } = extractSummary(markdown)
->>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
       return {
         slug,
         title: title || slug,

@@ -8,9 +8,8 @@ import router from './router'
 import './styles/global.less'
 import './styles/markdownTheme/z-blue.less'
 
-const app = createApp(App)
-console.log(1);
 
+const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(Antd)

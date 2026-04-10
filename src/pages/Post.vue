@@ -240,20 +240,12 @@ const scrollToHeading = (id: string) => {
 .toc-sidebar {
   width: 280px;
   flex-shrink: 0;
-<<<<<<< HEAD
   display: none; // 默认在小屏幕上隐藏
   position: sticky;
   top: 80px; // Header height + padding
 
   // 小到中等屏幕：在 768px 以上显示并使用较窄宽度
   @media (min-width: 768px) {
-=======
-  display: none;
-  position: sticky;
-  top: 40px;
-  
-  @media (min-width: 1100px) {
->>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
     display: block;
     width: 200px;
   }
@@ -269,7 +261,6 @@ const scrollToHeading = (id: string) => {
   }
 
   .toc-container {
-<<<<<<< HEAD
     max-width: 100%; // 避免溢出父容器
     background: #fff;
     padding: 20px;
@@ -283,37 +274,6 @@ const scrollToHeading = (id: string) => {
       margin-bottom: 15px;
       padding-bottom: 10px;
       border-bottom: 1px solid #eee;
-=======
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    padding: 24px;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    
-    .toc-header {
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-      
-      h3 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin: 0 0 8px 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-      
-      .toc-line {
-        height: 3px;
-        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-        border-radius: 2px;
-        width: 60px;
-      }
->>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
     }
 
     ul {
@@ -332,13 +292,6 @@ const scrollToHeading = (id: string) => {
           display: block;
           transition: all 0.2s;
           font-size: 0.9rem;
-<<<<<<< HEAD
-
-=======
-          padding: 6px 12px;
-          border-radius: 8px;
-          
->>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
           &:hover {
             color: #667eea;
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
@@ -351,13 +304,8 @@ const scrollToHeading = (id: string) => {
           background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
           border-left: 3px solid #667eea;
         }
-<<<<<<< HEAD
 
         &.toc-level-1 { padding-left: 0; font-weight: bold; }
-=======
-        
-        &.toc-level-1 { padding-left: 0; font-weight: 600; }
->>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
         &.toc-level-2 { padding-left: 0; }
         &.toc-level-3 { padding-left: 15px; font-size: 0.85rem; }
         &.toc-level-4 { padding-left: 30px; font-size: 0.85rem; }

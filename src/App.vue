@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-<<<<<<< HEAD
-// import StarBackground from './components/StarBackground.vue'
-import newBackground from './components/newBackground.vue'
-=======
 import { HomeOutlined, ReadOutlined, ToolOutlined } from '@ant-design/icons-vue'
-import StarBackground from './components/StarBackground.vue'
->>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
-
-
+import newBackground from './components/newBackground.vue'
+import { globalStore } from './store'
 const router = useRouter()
 const route = useRoute()
+const store = globalStore()
 const selectedKeys = ref<string[]>(['/'])
+const isParticleEffectEnabled = computed({
+  get: () => store.isVisibleParticleEffect,
+  set: (value: boolean) => store.setParticleEffect(value),
+})
+const shouldShowParticleEffect = computed(() => route.path === '/' && isParticleEffectEnabled.value)
 
 watch(() => route.path, (newPath) => {
   if (newPath.startsWith('/blog')) selectedKeys.value = ['/blog']
   else if (newPath.startsWith('/tools')) selectedKeys.value = ['/tools']
   else selectedKeys.value = ['/']
-})
+}, { immediate: true })
 
 const handleClick = ({ key }: { key: string }) => {
   router.push(key)
@@ -26,25 +26,65 @@ const handleClick = ({ key }: { key: string }) => {
 </script>
 
 <template>
-  <newBackground />
+  <newBackground v-if="shouldShowParticleEffect" />
   <a-layout class="app-container">
-  
     <div class="header">
       <div class="logo" @click="handleClick({ key: '/' })">Alex Blog</div>
-       <div class="glass-radio-group">
-        <input type="radio" name="plan" id="glass-silver" checked="" />
-        <label for="glass-silver" @click="handleClick({ key: '/' })" key="/">
+      <div class="header-actions">
+        <div class="glass-radio-group">
+        <input 
+          id="glass-silver" 
+          type="radio" 
+          name="plan"
+          :checked="selectedKeys[0] === '/'"
+        >
+        <label
+          key="/"
+          for="glass-silver" 
+          @click="handleClick({ key: '/' })">
           <HomeOutlined /> 首页
         </label>
-        <input type="radio" name="plan" id="glass-gold" />
-        <label for="glass-gold" @click="handleClick({ key: '/blog' })" key="/blog">
+        <input
+          id="glass-gold"
+          type="radio"
+          name="plan"
+          :checked="selectedKeys[0] === '/blog'"
+        >
+        <label
+          key="/blog"
+          for="glass-gold"
+          @click="handleClick({ key: '/blog' })"
+        >
           <ReadOutlined /> 博客
         </label>
-        <input type="radio" name="plan" id="glass-platinum" />
-        <label for="glass-platinum" @click="handleClick({ key: '/tools' })" key="/tools">
+        <input
+          id="glass-platinum"
+          type="radio"
+          name="plan"
+          :checked="selectedKeys[0] === '/tools'"
+        >
+        <label
+          key="/tools"
+          for="glass-platinum"
+          @click="handleClick({ key: '/tools' })"
+        >
           <ToolOutlined /> 工具
         </label>
-        <div class="glass-glider"></div>
+        <div class="glass-glider" />
+        </div>
+        <div class="glass-switch">
+          <span class="switch-label">流体特效</span>
+          <input
+            id="particle-effect-switch"
+            v-model="isParticleEffectEnabled"
+            type="checkbox"
+          >
+          <label for="particle-effect-switch" class="switch-track">
+            <span class="switch-text switch-text-off">OFF</span>
+            <span class="switch-text switch-text-on">ON</span>
+            <span class="switch-thumb" />
+          </label>
+        </div>
       </div>
     </div>
     
@@ -73,11 +113,17 @@ const handleClick = ({ key }: { key: string }) => {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   padding: 12px 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 15;
   position: sticky;
   top: 0;
   width: 100%;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .logo {
@@ -216,6 +262,126 @@ const handleClick = ({ key }: { key: string }) => {
   box-shadow:
     0 0 18px rgba(160, 216, 255, 0.5),
     0 0 10px rgba(200, 240, 255, 0.4) inset;
+}
+
+.glass-switch {
+  --bg: rgba(255, 255, 255, 0.08);
+  --text: #e5e5e5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.5rem 0.7rem 0.5rem 1rem;
+  border-radius: 1.2rem;
+  background: var(--bg);
+  color: var(--text);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 1px 1px 6px rgba(255, 255, 255, 0.15),
+    inset -1px -1px 8px rgba(0, 0, 0, 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.switch-label {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.glass-switch input {
+  display: none;
+}
+
+.switch-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 84px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(13, 18, 35, 0.65);
+  box-shadow:
+    inset 0 1px 3px rgba(255, 255, 255, 0.08),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+
+.switch-text {
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  transition: color 0.35s ease, opacity 0.35s ease;
+}
+
+.switch-text-off {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.switch-text-on {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 38px;
+  height: calc(100% - 6px);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #c0c0c055, #e0e0e0);
+  box-shadow:
+    0 0 18px rgba(192, 192, 192, 0.35),
+    0 0 10px rgba(255, 255, 255, 0.25) inset;
+  transition:
+    transform 0.35s cubic-bezier(0.37, 1.95, 0.66, 0.56),
+    background 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.glass-switch input:checked + .switch-track {
+  background: rgba(24, 34, 56, 0.88);
+  box-shadow:
+    inset 0 1px 3px rgba(255, 255, 255, 0.08),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.4),
+    0 0 18px rgba(102, 126, 234, 0.15);
+}
+
+.glass-switch input:checked + .switch-track .switch-thumb {
+  transform: translateX(35px);
+  background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
+  box-shadow:
+    0 0 18px rgba(160, 216, 255, 0.45),
+    0 0 10px rgba(200, 240, 255, 0.35) inset;
+}
+
+.glass-switch input:checked + .switch-track .switch-text-off {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.glass-switch input:checked + .switch-track .switch-text-on {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .glass-radio-group,
+  .glass-switch {
+    justify-content: center;
+  }
 }
 
 </style>

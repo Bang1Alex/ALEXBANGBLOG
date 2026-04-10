@@ -3,8 +3,14 @@
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import {globalStore} from '@/store/index'
 const canvasRef = ref(null)
+
+const store = globalStore()
+const isVisibleParticleEffect = computed(() => store.isVisibleParticleEffect)
+// console.log("store",store.isVisibleParticleEffect);
+
 onMounted(() => {
     animatate()
 })
@@ -1085,6 +1091,7 @@ function animatate() {
     }
 
     window.addEventListener('mousedown', (e) => {
+        if(!isVisibleParticleEffect.value) return;
         let pointer = pointers[0];
         let posX = scaleByPixelRatio(e.clientX);
         let posY = scaleByPixelRatio(e.clientY);
@@ -1093,6 +1100,7 @@ function animatate() {
     });
 
     document.body.addEventListener('mousemove', function handleFirstMouseMove(e) {
+          if(!isVisibleParticleEffect.value) return;
         let pointer = pointers[0];
         let posX = scaleByPixelRatio(e.clientX);
         let posY = scaleByPixelRatio(e.clientY);
@@ -1103,6 +1111,7 @@ function animatate() {
     });
 
     window.addEventListener('mousemove', (e) => {
+          if(!isVisibleParticleEffect.value) return;
         let pointer = pointers[0];
         let posX = scaleByPixelRatio(e.clientX);
         let posY = scaleByPixelRatio(e.clientY);
@@ -1111,6 +1120,7 @@ function animatate() {
     });
 
     document.body.addEventListener('touchstart', function handleFirstTouchStart(e) {
+          if(!isVisibleParticleEffect.value) return;
         const touches = e.targetTouches;
         let pointer = pointers[0];
         for (let i = 0; i < touches.length; i++) {
@@ -1123,6 +1133,7 @@ function animatate() {
     });
 
     window.addEventListener('touchstart', (e) => {
+          if(!isVisibleParticleEffect.value) return;
         const touches = e.targetTouches;
         let pointer = pointers[0];
         for (let i = 0; i < touches.length; i++) {
@@ -1135,6 +1146,7 @@ function animatate() {
     window.addEventListener(
         'touchmove',
         (e) => {
+              if(!isVisibleParticleEffect.value) return;
             const touches = e.targetTouches;
             let pointer = pointers[0];
             for (let i = 0; i < touches.length; i++) {
@@ -1147,6 +1159,7 @@ function animatate() {
     );
 
     window.addEventListener('touchend', (e) => {
+          if(!isVisibleParticleEffect.value) return;
         const touches = e.changedTouches;
         let pointer = pointers[0];
         for (let i = 0; i < touches.length; i++) {
