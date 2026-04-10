@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+<<<<<<< HEAD
 // import StarBackground from './components/StarBackground.vue'
 import newBackground from './components/newBackground.vue'
+=======
+import { HomeOutlined, ReadOutlined, ToolOutlined } from '@ant-design/icons-vue'
+import StarBackground from './components/StarBackground.vue'
+>>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
 
 
 const router = useRouter()
@@ -10,7 +15,6 @@ const route = useRoute()
 const selectedKeys = ref<string[]>(['/'])
 
 watch(() => route.path, (newPath) => {
-  // Simple matching to highlight correct menu item
   if (newPath.startsWith('/blog')) selectedKeys.value = ['/blog']
   else if (newPath.startsWith('/tools')) selectedKeys.value = ['/tools']
   else selectedKeys.value = ['/']
@@ -25,20 +29,24 @@ const handleClick = ({ key }: { key: string }) => {
   <newBackground />
   <a-layout class="app-container">
   
-    <a-layout-header class="header">
+    <div class="header">
       <div class="logo" @click="handleClick({ key: '/' })">Alex Blog</div>
-      <a-menu
-        v-model:selectedKeys="selectedKeys"
-        mode="horizontal"
-        theme="light"
-        class="menu"
-        @click="handleClick"
-      >
-        <a-menu-item key="/">首页</a-menu-item>
-        <a-menu-item key="/blog">博客</a-menu-item>
-        <a-menu-item key="/tools">工具</a-menu-item>
-      </a-menu>
-    </a-layout-header>
+       <div class="glass-radio-group">
+        <input type="radio" name="plan" id="glass-silver" checked="" />
+        <label for="glass-silver" @click="handleClick({ key: '/' })" key="/">
+          <HomeOutlined /> 首页
+        </label>
+        <input type="radio" name="plan" id="glass-gold" />
+        <label for="glass-gold" @click="handleClick({ key: '/blog' })" key="/blog">
+          <ReadOutlined /> 博客
+        </label>
+        <input type="radio" name="plan" id="glass-platinum" />
+        <label for="glass-platinum" @click="handleClick({ key: '/tools' })" key="/tools">
+          <ToolOutlined /> 工具
+        </label>
+        <div class="glass-glider"></div>
+      </div>
+    </div>
     
     <a-layout-content class="main-content">
       <router-view />
@@ -61,22 +69,34 @@ const handleClick = ({ key }: { key: string }) => {
 .header {
   display: flex;
   align-items: center;
-  background: #fff;
-  padding: 0 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  justify-content: space-between;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 12px 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1000;
   position: sticky;
   top: 0;
   width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo {
-  font-weight: bold;
-  font-size: 1.2rem;
-  color: #1890ff;
-  margin-right: 20px;
+  font-weight: 800;
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-right: 24px;
   flex-shrink: 0;
   cursor: pointer;
+  letter-spacing: -0.5px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
 }
 
 .menu {
@@ -108,4 +128,94 @@ const handleClick = ({ key }: { key: string }) => {
   background-color: #f5f7fa;
   font-size: 0.9rem;
 }
+
+/* From Uiverse.io by chase2k25 */ 
+.glass-radio-group {
+  --bg: rgba(255, 255, 255, 0.08);
+  --text: #e5e5e5;
+
+  display: flex;
+  position: relative;
+  background: var(--bg);
+  border-radius: 1.2rem;
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 1px 1px 6px rgba(255, 255, 255, 0.15),
+    inset -1px -1px 8px rgba(0, 0, 0, 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  width: fit-content;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-radio-group input {
+  display: none;
+}
+
+.glass-radio-group label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  font-size: 14px;
+  padding: 0.8rem 1.6rem;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text);
+  position: relative;
+  z-index: 2;
+  transition: color 0.3s ease-in-out;
+  gap: 6px;
+}
+
+.glass-radio-group label:hover {
+  color: white;
+}
+
+.glass-radio-group input:checked + label {
+  color: #fff;
+}
+
+.glass-glider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: calc(100% / 3);
+  border-radius: 1rem;
+  z-index: 1;
+  transition:
+    transform 0.5s cubic-bezier(0.37, 1.95, 0.66, 0.56),
+    background 0.4s ease-in-out,
+    box-shadow 0.4s ease-in-out;
+}
+
+/* Silver */
+#glass-silver:checked ~ .glass-glider {
+  transform: translateX(0%);
+  background: linear-gradient(135deg, #c0c0c055, #e0e0e0);
+  box-shadow:
+    0 0 18px rgba(192, 192, 192, 0.5),
+    0 0 10px rgba(255, 255, 255, 0.4) inset;
+}
+
+/* Gold */
+#glass-gold:checked ~ .glass-glider {
+  transform: translateX(100%);
+  background: linear-gradient(135deg, #ffd70055, #ffcc00);
+  box-shadow:
+    0 0 18px rgba(255, 215, 0, 0.5),
+    0 0 10px rgba(255, 235, 150, 0.4) inset;
+}
+
+/* Platinum */
+#glass-platinum:checked ~ .glass-glider {
+  transform: translateX(200%);
+  background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
+  box-shadow:
+    0 0 18px rgba(160, 216, 255, 0.5),
+    0 0 10px rgba(200, 240, 255, 0.4) inset;
+}
+
 </style>

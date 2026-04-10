@@ -93,14 +93,15 @@ const loadPost = async () => {
       return
     }
 
-    content.value = await entry[1]()
+    let markdown = await entry[1]()
+     // 第一步：去除开头的不可见字符（空格、换行、制表符、全角空格等）
+    const trimmedMarkdown = markdown.replace(/^\s*/, '');
+    content.value = trimmedMarkdown.replace(/^----[\s\S]*?----\n?/, '')
   } catch {
     content.value = '# Error loading post'
   } finally {
     loading.value = false
-    // Wait for DOM update then generate TOC and setup observer
     nextTick(() => {
-      // Small delay to ensure markdown-body is fully rendered and reflowed
       setTimeout(() => {
         generateToc()
         setupObserver()
@@ -137,19 +138,24 @@ const scrollToHeading = (id: string) => {
 <template>
   <div class="post-page">
     <div class="post-layout">
-      <!-- Main Content -->
       <div class="post-container">
+         <div class="back-link">
+          <router-link to="/blog">
+            <span class="back-icon">←</span>
+            <span>返回博客列表</span>
+          </router-link>
+        </div>
         <a-skeleton v-if="loading" active :paragraph="{ rows: 5 }" />
         <div v-else class="markdown-body" v-html="renderedContent"></div>
-        <div class="back-link">
-          <router-link to="/blog">← 返回博客列表</router-link>
-        </div>
+       
       </div>
       
-      <!-- TOC Sidebar -->
       <aside class="toc-sidebar" v-if="toc.length > 0">
         <div class="toc-container">
-          <h3>目录</h3>
+          <div class="toc-header">
+            <h3>目录</h3>
+            <div class="toc-line"></div>
+          </div>
           <ul>
             <li 
               v-for="item in toc" 
@@ -164,7 +170,6 @@ const scrollToHeading = (id: string) => {
       </aside>
     </div>
     
-    <!-- Back to Top -->
     <a-back-top :style="{ right: '40px', bottom: '40px' }" />
   </div>
 </template>
@@ -172,6 +177,9 @@ const scrollToHeading = (id: string) => {
 <style lang="less" scoped>
 .post-page {
   position: relative;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 40px 20px 80px;
 }
 
 .post-layout {
@@ -185,35 +193,67 @@ const scrollToHeading = (id: string) => {
 
 .post-container {
   flex: 1;
-  max-width: 800px; // Restore max-width but let it be flexible
-  min-width: 0; // Prevent flex item overflow
+  max-width: 800px;
+  min-width: 0;
   
   .markdown-body {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: @border-radius-base;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.8);
   }
   
   .back-link {
-    margin-top: 20px;
-    
+    margin-bottom: 30px;
     a {
-      color: @primary-color;
-      &:hover { text-decoration: underline; }
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        background: linear-gradient(135deg, #764ba2 0%, #f093fb 100%);
+        color: white;
+      }
+      
+      .back-icon {
+        font-size: 1.2rem;
+        transition: transform 0.3s;
+      }
+      
+      &:hover .back-icon {
+        transform: translateX(-4px);
+      }
     }
   }
 }
 
 .toc-sidebar {
-  width: 250px;
+  width: 280px;
   flex-shrink: 0;
+<<<<<<< HEAD
   display: none; // 默认在小屏幕上隐藏
   position: sticky;
   top: 80px; // Header height + padding
 
   // 小到中等屏幕：在 768px 以上显示并使用较窄宽度
   @media (min-width: 768px) {
+=======
+  display: none;
+  position: sticky;
+  top: 40px;
+  
+  @media (min-width: 1100px) {
+>>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
     display: block;
     width: 200px;
   }
@@ -229,6 +269,7 @@ const scrollToHeading = (id: string) => {
   }
 
   .toc-container {
+<<<<<<< HEAD
     max-width: 100%; // 避免溢出父容器
     background: #fff;
     padding: 20px;
@@ -242,6 +283,37 @@ const scrollToHeading = (id: string) => {
       margin-bottom: 15px;
       padding-bottom: 10px;
       border-bottom: 1px solid #eee;
+=======
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 24px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    
+    .toc-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      
+      h3 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .toc-line {
+        height: 3px;
+        background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        border-radius: 2px;
+        width: 60px;
+      }
+>>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
     }
 
     ul {
@@ -255,26 +327,37 @@ const scrollToHeading = (id: string) => {
         cursor: pointer;
 
         a {
-          color: #606266;
+          color: #4b5563;
           text-decoration: none;
           display: block;
           transition: all 0.2s;
           font-size: 0.9rem;
+<<<<<<< HEAD
 
+=======
+          padding: 6px 12px;
+          border-radius: 8px;
+          
+>>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
           &:hover {
-            color: @primary-color;
+            color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
           }
         }
 
         &.active a {
-          color: @primary-color;
-          font-weight: bold;
-          border-left: 3px solid @primary-color;
-          padding-left: 8px;
-          margin-left: -11px; // Compensate border
+          color: #667eea;
+          font-weight: 600;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+          border-left: 3px solid #667eea;
         }
+<<<<<<< HEAD
 
         &.toc-level-1 { padding-left: 0; font-weight: bold; }
+=======
+        
+        &.toc-level-1 { padding-left: 0; font-weight: 600; }
+>>>>>>> 77c727c25d2206ebacc057d21278dcd9e3be3a5d
         &.toc-level-2 { padding-left: 0; }
         &.toc-level-3 { padding-left: 15px; font-size: 0.85rem; }
         &.toc-level-4 { padding-left: 30px; font-size: 0.85rem; }
@@ -284,10 +367,28 @@ const scrollToHeading = (id: string) => {
   }
 }
 
-// Responsive adjustments
 @media (max-width: 800px) {
+  .post-page {
+    padding: 30px 16px 60px;
+  }
+  
   .post-container .markdown-body {
-    padding: 15px;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .post-page {
+    padding: 20px 12px 40px;
+  }
+  
+  .post-container .markdown-body {
+    padding: 20px;
+    border-radius: 16px;
+  }
+  
+  .post-layout {
+    gap: 20px;
   }
 }
 </style>
