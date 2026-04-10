@@ -208,51 +208,64 @@ const scrollToHeading = (id: string) => {
 .toc-sidebar {
   width: 250px;
   flex-shrink: 0;
-  display: none; // Hidden on small screens
+  display: none; // 默认在小屏幕上隐藏
   position: sticky;
   top: 80px; // Header height + padding
-  
-  @media (min-width: 1100px) {
+
+  // 小到中等屏幕：在 768px 以上显示并使用较窄宽度
+  @media (min-width: 768px) {
     display: block;
+    width: 200px;
   }
-  
+
+  // 大屏幕：恢复常规宽度
+  @media (min-width: 1100px) {
+    width: 250px;
+  }
+
+  // 超大屏幕：适当加宽以利用空间
+  @media (min-width: 1400px) {
+    width: 300px;
+  }
+
   .toc-container {
+    max-width: 100%; // 避免溢出父容器
     background: #fff;
     padding: 20px;
     border-radius: @border-radius-base;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
     max-height: calc(100vh - 100px);
     overflow-y: auto;
-    
+
     h3 {
       font-size: 1.1rem;
       margin-bottom: 15px;
       padding-bottom: 10px;
       border-bottom: 1px solid #eee;
     }
-    
+
     ul {
       list-style: none;
       padding: 0;
       margin: 0;
-      
+
       li {
         margin-bottom: 8px;
         line-height: 1.4;
         cursor: pointer;
-        
+
         a {
           color: #606266;
           text-decoration: none;
           display: block;
           transition: all 0.2s;
           font-size: 0.9rem;
-          
+
           &:hover {
             color: @primary-color;
           }
         }
-        
+
         &.active a {
           color: @primary-color;
           font-weight: bold;
@@ -260,7 +273,7 @@ const scrollToHeading = (id: string) => {
           padding-left: 8px;
           margin-left: -11px; // Compensate border
         }
-        
+
         &.toc-level-1 { padding-left: 0; font-weight: bold; }
         &.toc-level-2 { padding-left: 0; }
         &.toc-level-3 { padding-left: 15px; font-size: 0.85rem; }

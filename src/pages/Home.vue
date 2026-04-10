@@ -25,21 +25,13 @@ const getBasename = (filePath: string) => {
   return fileName.replace(/\.md$/i, '')
 }
 
-const extractSummary = (markdown: string) => {
-  const noCode = markdown.replace(/```[\s\S]*?```/g, '')
-  const lines = noCode.split(/\r?\n/)
-  for (const line of lines) {
-    const text = line.trim()
-    if (!text) continue
-    if (text.startsWith('#')) continue
-    if (text.startsWith('>')) continue
-    if (text.startsWith('-')) continue
-    if (text.startsWith('*')) continue
-    if (/^\d+\./.test(text)) continue
-    return text.slice(0, 100) + (text.length > 100 ? '...' : '')
-  }
-  return ''
-}
+// Hardcoded summaries
+const summaries: Record<string, string> = {
+  '浅谈进程 线程 JavaScript 事件循环 (Event Loop)  垃圾回收 异步 promise async awiat,以及他们之间的关系': '深入解析了进程、线程、事件循环、垃圾回收等 JS 核心概念，并阐明了它们在异步编程中的相互关系，帮助读者构建完整的底层知识体系。',
+  '批量删除node_modules': '提供了一个高效的 Windows 批处理脚本，用于快速批量删除项目中的 `node_modules` 文件夹，解决了前端开发中常见的磁盘空间占用问题。',
+  '计算机网络': '系统介绍了 HTTP/HTTPS 协议、TCP/IP 模型、三次握手与四次挥手等网络基础知识，并探讨了跨域、浏览器缓存及多种存储方案，是前端开发者必备的网络知识纲要。',
+  'JavaScript 高级部分': '全面梳理了 JS 高级知识，涵盖作用域、闭包、原型链、深浅拷贝、`this` 指向以及性能优化等方面，旨在帮助开发者夯实内功，提升代码质量。',
+};
 
 onMounted(async () => {
   const entries = Object.entries(postLoaders)
@@ -51,8 +43,9 @@ onMounted(async () => {
 
   recentPosts.value = await Promise.all(
     latestEntries.map(async ({ slug, loader }) => {
-      const markdown = await loader()
-      const summary = extractSummary(markdown)
+      // const markdown = await loader()
+      // const summary = extractSummary(markdown)
+      const summary = summaries[slug] || '暂无摘要。';
       return {
         slug,
         title: slug,

@@ -6,7 +6,7 @@ import * as AntdIcons from '@ant-design/icons-vue'
 import App from './App.vue'
 import router from './router'
 import './styles/global.less'
-import './styles/markdownTheme/chocolate.less'
+import './styles/markdownTheme/z-blue.less'
 
 const app = createApp(App)
 console.log(1);

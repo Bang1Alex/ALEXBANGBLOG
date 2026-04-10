@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import StarBackground from './components/StarBackground.vue'
+// import StarBackground from './components/StarBackground.vue'
+import newBackground from './components/newBackground.vue'
 
 
 const router = useRouter()
@@ -21,7 +22,7 @@ const handleClick = ({ key }: { key: string }) => {
 </script>
 
 <template>
-  <StarBackground />
+  <newBackground />
   <a-layout class="app-container">
   
     <a-layout-header class="header">
