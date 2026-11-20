@@ -1,175 +1,140 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { motion } from 'motion-v'
 import HuarongRoad from '@/tools/HuarongRoad/index.vue'
 import PaperCut from '@/tools/paperCut/index.vue'
 import MindMap from '@/tools/MindMap/index.vue'
 import MatchstickChallengeGame from '@/tools/MatchstickChallengeGame/index.vue'
 import NineLinkedRings from '@/tools/NineLinkedRings/index.vue'
 import Gallery from '@/tools/3DGallery/index.vue'
-
+import { toolCatalog } from '@/data/content'
 
 const route = useRoute()
 
-// Map tool IDs to components
-const toolMap: Record<string, any> = {
+const toolMap: Record<string, unknown> = {
   HuarongRoad,
   PaperCut,
   MindMap,
   MatchstickChallengeGame,
   NineLinkedRings,
-  Gallery
+  Gallery,
 }
 
 const currentToolId = computed(() => route.params.id as string)
 const currentTool = computed(() => toolMap[currentToolId.value] || null)
-console.log(currentToolId.value);
-
+const toolMeta = computed(() => toolCatalog.find((tool) => tool.id === currentToolId.value) || null)
 </script>
 
 <template>
-  <div class="tool-detail-container">
-    <div class="header">
-      <router-link to="/tools" class="back-link">
-        <span class="back-icon">←</span>
-        <span>返回工具列表</span>
-      </router-link>
-      <h2>{{ currentTool.value?.name || currentToolId }}</h2>
-    </div>
-    
-    <div v-if="currentTool" class="tool-wrapper">
-      <component :is="currentTool" />
-    </div>
-    <div v-else class="not-found">
-      工具未找到
-    </div>
+  <div class="tool-detail-page">
+    <motion.section
+      class="tool-detail-shell"
+      :initial="{ opacity: 0, y: 24 }"
+      :animate="{ opacity: 1, y: 0 }"
+      :transition="{ duration: 0.55 }"
+    >
+      <div class="tool-detail-head">
+        <router-link to="/tools" class="back-link">返回作品列表</router-link>
+        <span class="tool-status">{{ toolMeta?.status || 'Interactive Tool' }}</span>
+        <h1>{{ toolMeta?.name || currentToolId }}</h1>
+        <p>{{ toolMeta?.description || '这是一个交互工具页面。' }}</p>
+      </div>
+
+      <div v-if="currentTool" class="tool-stage">
+        <component :is="currentTool" />
+      </div>
+      <div v-else class="not-found">没有找到对应的工具页面。</div>
+    </motion.section>
   </div>
 </template>
 
-<style lang="less" scoped>
-.tool-detail-container {
-  width: 100%;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
-  padding: 40px 20px 80px;
-  box-sizing: border-box;
-  
-  .header {
-    max-width: 1200px;
-    margin: 0 auto 30px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border-radius: 30px;
-      font-weight: 600;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      text-decoration: none;
-      
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-        background: linear-gradient(135deg, #764ba2 0%, #f093fb 100%);
-        color: white;
-      }
-      
-      .back-icon {
-        font-size: 1.2rem;
-        transition: transform 0.3s;
-      }
-      
-      &:hover .back-icon {
-        transform: translateX(-4px);
-      }
-    }
-    
-    h2 {
-      margin: 0;
-      font-size: 1.8rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-  }
-  
-  .tool-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    overflow: hidden;
-    min-height: 600px;
-  }
-  
-  .not-found {
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
-    font-size: 1.2rem;
-    color: #6b7280;
-    padding: 80px 20px;
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-  }
+<style scoped>
+.tool-detail-page {
+  padding-bottom: 24px;
 }
 
-@media (max-width: 768px) {
-  .tool-detail-container {
-    padding: 30px 16px 60px;
-  }
-  
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-    
-    h2 {
-      font-size: 1.5rem;
-    }
-  }
-  
-  .tool-wrapper {
-    min-height: 500px;
-  }
-  
-  .not-found {
-    padding: 60px 20px;
-  }
+.tool-detail-shell,
+.tool-stage,
+.not-found {
+  border-radius: 30px;
+  background: rgba(255, 250, 244, 0.88);
+  border: 1px solid rgba(123, 92, 59, 0.1);
+  box-shadow: 0 22px 55px rgba(49, 34, 22, 0.08);
 }
 
-@media (max-width: 480px) {
-  .tool-detail-container {
-    padding: 20px 12px 40px;
+.tool-detail-shell {
+  padding: 22px;
+}
+
+.tool-detail-head {
+  padding: 28px;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at top right, rgba(29, 107, 92, 0.14), transparent 30%),
+    rgba(255, 255, 255, 0.6);
+}
+
+.back-link,
+.tool-status {
+  display: inline-flex;
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.back-link {
+  background: rgba(29, 107, 92, 0.08);
+  color: #1d6b5c;
+  margin-right: 10px;
+}
+
+.tool-status {
+  background: rgba(239, 123, 69, 0.1);
+  color: #d76d3f;
+}
+
+.tool-detail-head h1 {
+  margin: 18px 0 10px;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  color: #20170f;
+}
+
+.tool-detail-head p {
+  max-width: 58ch;
+  margin: 0;
+  color: #645441;
+  line-height: 1.8;
+}
+
+.tool-stage,
+.not-found {
+  margin-top: 18px;
+  overflow: hidden;
+}
+
+.tool-stage {
+  padding: 8px;
+}
+
+.not-found {
+  padding: 48px 24px;
+  text-align: center;
+  color: #7d6954;
+}
+
+@media (max-width: 640px) {
+  .tool-detail-shell {
+    padding: 18px;
+    border-radius: 24px;
   }
-  
-  .header {
-    .back-link {
-      padding: 10px 20px;
-      font-size: 0.9rem;
-    }
-    
-    h2 {
-      font-size: 1.3rem;
-    }
-  }
-  
-  .tool-wrapper {
-    border-radius: 16px;
-    min-height: 400px;
+
+  .tool-detail-head {
+    padding: 20px;
+    border-radius: 22px;
   }
 }
 </style>

@@ -1,18 +1,29 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { HomeOutlined, ReadOutlined, ToolOutlined } from '@ant-design/icons-vue'
+import { motion } from 'motion-v'
 import newBackground from './components/newBackground.vue'
 import { globalStore } from './store'
+
 const router = useRouter()
 const route = useRoute()
 const store = globalStore()
+
 const selectedKeys = ref<string[]>(['/'])
+const navItems = [
+  { key: '/', label: '首页', icon: HomeOutlined, note: 'Overview' },
+  { key: '/blog', label: '文章', icon: ReadOutlined, note: 'Writing' },
+  { key: '/tools', label: '作品', icon: ToolOutlined, note: 'Tools' },
+]
+
 const isParticleEffectEnabled = computed({
   get: () => store.isVisibleParticleEffect,
   set: (value: boolean) => store.setParticleEffect(value),
 })
+
 const shouldShowParticleEffect = computed(() => route.path === '/' && isParticleEffectEnabled.value)
+const currentYear = new Date().getFullYear()
 
 watch(() => route.path, (newPath) => {
   if (newPath.startsWith('/blog')) selectedKeys.value = ['/blog']
@@ -27,361 +38,276 @@ const handleClick = ({ key }: { key: string }) => {
 
 <template>
   <newBackground v-if="shouldShowParticleEffect" />
-  <a-layout class="app-container">
-    <div class="header">
-      <div class="logo" @click="handleClick({ key: '/' })">Alex Blog</div>
-      <div class="header-actions">
-        <div class="glass-radio-group">
-        <input 
-          id="glass-silver" 
-          type="radio" 
-          name="plan"
-          :checked="selectedKeys[0] === '/'"
-        >
-        <label
-          key="/"
-          for="glass-silver" 
-          @click="handleClick({ key: '/' })">
-          <HomeOutlined /> 首页
-        </label>
-        <input
-          id="glass-gold"
-          type="radio"
-          name="plan"
-          :checked="selectedKeys[0] === '/blog'"
-        >
-        <label
-          key="/blog"
-          for="glass-gold"
-          @click="handleClick({ key: '/blog' })"
-        >
-          <ReadOutlined /> 博客
-        </label>
-        <input
-          id="glass-platinum"
-          type="radio"
-          name="plan"
-          :checked="selectedKeys[0] === '/tools'"
-        >
-        <label
-          key="/tools"
-          for="glass-platinum"
-          @click="handleClick({ key: '/tools' })"
-        >
-          <ToolOutlined /> 工具
-        </label>
-        <div class="glass-glider" />
-        </div>
-        <div class="glass-switch">
-          <span class="switch-label">流体特效</span>
-          <input
-            id="particle-effect-switch"
-            v-model="isParticleEffectEnabled"
-            type="checkbox"
-          >
-          <label for="particle-effect-switch" class="switch-track">
-            <span class="switch-text switch-text-off">OFF</span>
-            <span class="switch-text switch-text-on">ON</span>
-            <span class="switch-thumb" />
-          </label>
+  <a-layout class="app-shell">
+    <motion.header
+      class="site-header"
+      :initial="{ opacity: 0, y: -24 }"
+      :animate="{ opacity: 1, y: 0 }"
+      :transition="{ duration: 0.55, ease: 'easeOut' }"
+    >
+      <div class="brand-mark" @click="handleClick({ key: '/' })">
+        <span class="brand-badge">Alex</span>
+        <div>
+          <strong>Alex Bang Blog</strong>
+          <p>Writing, experiments, and playful interfaces.</p>
         </div>
       </div>
-    </div>
-    
-    <a-layout-content class="main-content">
+
+      <nav class="site-nav">
+        <button
+          v-for="item in navItems"
+          :key="item.key"
+          type="button"
+          class="nav-chip"
+          :class="{ active: selectedKeys[0] === item.key }"
+          @click="handleClick({ key: item.key })"
+        >
+          <component :is="item.icon" />
+          <span>{{ item.label }}</span>
+          <small>{{ item.note }}</small>
+        </button>
+      </nav>
+
+      <label class="particle-toggle" for="particle-effect-switch">
+        <div>
+          <span>粒子背景</span>
+          <small>Homepage atmosphere</small>
+        </div>
+        <input
+          id="particle-effect-switch"
+          v-model="isParticleEffectEnabled"
+          type="checkbox"
+        >
+        <span class="toggle-track">
+          <span class="toggle-thumb" />
+        </span>
+      </label>
+    </motion.header>
+
+    <a-layout-content class="page-content">
       <router-view />
     </a-layout-content>
-    
-    <a-layout-footer class="footer">
-      <p>&copy; 2023 Alex Blog</p>
+
+    <a-layout-footer class="site-footer">
+      <div>
+        <strong>Alex Bang Blog</strong>
+        <p>把技术、写作和互动作品放在同一个舞台里。</p>
+      </div>
+      <span>&copy; {{ currentYear }}</span>
     </a-layout-footer>
   </a-layout>
 </template>
 
 <style scoped>
-.app-container {
+.app-shell {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
   background: transparent;
+  position: relative;
 }
 
-.header {
+.site-header {
+  width: min(1180px, calc(100% - 32px));
+  margin: 20px auto 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  padding: 12px 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 15;
+  gap: 18px;
+  padding: 16px 18px;
+  background: rgba(255, 252, 244, 0.76);
+  border: 1px solid rgba(123, 92, 59, 0.12);
+  box-shadow: 0 18px 45px rgba(44, 31, 20, 0.1);
+  backdrop-filter: blur(16px);
+  border-radius: 24px;
   position: sticky;
   top: 0;
-  width: 100%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 20;
 }
 
-.header-actions {
+.brand-mark {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
+  cursor: pointer;
+  min-width: 0;
 }
 
-.logo {
+.brand-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #1c6b5c, #ef7b45);
+  color: #fffaf1;
+  font-size: 0.95rem;
   font-weight: 800;
-  font-size: 1.4rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-right: 24px;
-  flex-shrink: 0;
-  cursor: pointer;
-  letter-spacing: -0.5px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    transform: scale(1.05);
-    filter: brightness(1.2);
-  }
+  letter-spacing: 0.08em;
+  box-shadow: 0 14px 25px rgba(28, 107, 92, 0.28);
 }
 
-.menu {
-  flex: 1;
-  border-bottom: none;
-  justify-content: flex-end;
+.brand-mark strong {
+  display: block;
+  color: #1d160f;
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
 }
 
-.main-content {
-  flex: 1;
-  padding: 20px;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  margin-top: 20px;
+.brand-mark p {
+  margin: 4px 0 0;
+  color: #72614e;
+  font-size: 0.82rem;
 }
 
-/* Ant Design Layout Content usually has grey background, override if needed */
-:deep(.ant-layout-content) {
-  background: transparent;
-}
-
-.footer {
-  text-align: center;
-  color: #999;
-  padding: 20px;
-  background-color: #f5f7fa;
-  font-size: 0.9rem;
-}
-
-/* From Uiverse.io by chase2k25 */ 
-.glass-radio-group {
-  --bg: rgba(255, 255, 255, 0.08);
-  --text: #e5e5e5;
-
-  display: flex;
-  position: relative;
-  background: var(--bg);
-  border-radius: 1.2rem;
-  backdrop-filter: blur(16px);
-  box-shadow:
-    inset 1px 1px 6px rgba(255, 255, 255, 0.15),
-    inset -1px -1px 8px rgba(0, 0, 0, 0.4),
-    0 6px 20px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-  width: fit-content;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.glass-radio-group input {
-  display: none;
-}
-
-.glass-radio-group label {
+.site-nav {
   flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
-  min-width: 80px;
-  font-size: 14px;
-  padding: 0.8rem 1.6rem;
-  cursor: pointer;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  color: var(--text);
-  position: relative;
-  z-index: 2;
-  transition: color 0.3s ease-in-out;
-  gap: 6px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.glass-radio-group label:hover {
-  color: white;
-}
-
-.glass-radio-group input:checked + label {
-  color: #fff;
-}
-
-.glass-glider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: calc(100% / 3);
-  border-radius: 1rem;
-  z-index: 1;
-  transition:
-    transform 0.5s cubic-bezier(0.37, 1.95, 0.66, 0.56),
-    background 0.4s ease-in-out,
-    box-shadow 0.4s ease-in-out;
-}
-
-/* Silver */
-#glass-silver:checked ~ .glass-glider {
-  transform: translateX(0%);
-  background: linear-gradient(135deg, #c0c0c055, #e0e0e0);
-  box-shadow:
-    0 0 18px rgba(192, 192, 192, 0.5),
-    0 0 10px rgba(255, 255, 255, 0.4) inset;
-}
-
-/* Gold */
-#glass-gold:checked ~ .glass-glider {
-  transform: translateX(100%);
-  background: linear-gradient(135deg, #ffd70055, #ffcc00);
-  box-shadow:
-    0 0 18px rgba(255, 215, 0, 0.5),
-    0 0 10px rgba(255, 235, 150, 0.4) inset;
-}
-
-/* Platinum */
-#glass-platinum:checked ~ .glass-glider {
-  transform: translateX(200%);
-  background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
-  box-shadow:
-    0 0 18px rgba(160, 216, 255, 0.5),
-    0 0 10px rgba(200, 240, 255, 0.4) inset;
-}
-
-.glass-switch {
-  --bg: rgba(255, 255, 255, 0.08);
-  --text: #e5e5e5;
+.nav-chip {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0.5rem 0.7rem 0.5rem 1rem;
-  border-radius: 1.2rem;
-  background: var(--bg);
-  color: var(--text);
-  backdrop-filter: blur(16px);
-  box-shadow:
-    inset 1px 1px 6px rgba(255, 255, 255, 0.15),
-    inset -1px -1px 8px rgba(0, 0, 0, 0.4),
-    0 6px 20px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(123, 92, 59, 0.12);
+  background: rgba(255, 255, 255, 0.45);
+  color: #594938;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 10px 20px rgba(77, 59, 40, 0.06);
 }
 
-.switch-label {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+.nav-chip span {
   white-space: nowrap;
 }
 
-.glass-switch input {
+.nav-chip small {
+  color: #8d7963;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nav-chip:hover,
+.nav-chip.active {
+  transform: translateY(-1px);
+  color: #fffaf1;
+  background: linear-gradient(135deg, #1d6b5c, #d76d3f);
+  border-color: transparent;
+}
+
+.nav-chip:hover small,
+.nav-chip.active small {
+  color: rgba(255, 250, 241, 0.72);
+}
+
+.particle-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.52);
+  border: 1px solid rgba(123, 92, 59, 0.12);
+  cursor: pointer;
+}
+
+.particle-toggle span {
+  display: block;
+  color: #2a2118;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.particle-toggle small {
+  display: block;
+  color: #8d7963;
+  font-size: 0.75rem;
+}
+
+.particle-toggle input {
   display: none;
 }
 
-.switch-track {
+.toggle-track {
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(29, 107, 92, 0.15);
+  padding: 3px;
   position: relative;
+  transition: background 0.2s ease;
+}
+
+.toggle-thumb {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1d6b5c, #d76d3f);
+  box-shadow: 0 8px 14px rgba(29, 107, 92, 0.24);
+  transition: transform 0.25s ease;
+}
+
+.particle-toggle input:checked + .toggle-track {
+  background: rgba(215, 109, 63, 0.18);
+}
+
+.particle-toggle input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(22px);
+}
+
+.page-content {
+  width: min(1240px, calc(100% - 32px));
+  margin: 18px auto 0;
+  flex: 1;
+}
+
+.site-footer {
+  width: min(1180px, calc(100% - 32px));
+  margin: 28px auto 24px;
+  padding: 18px 22px;
+  background: rgba(255, 251, 245, 0.82);
+  border: 1px solid rgba(123, 92, 59, 0.1);
+  border-radius: 22px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  width: 84px;
-  padding: 4px 8px;
-  border-radius: 999px;
-  cursor: pointer;
-  background: rgba(13, 18, 35, 0.65);
-  box-shadow:
-    inset 0 1px 3px rgba(255, 255, 255, 0.08),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.3);
-  transition: background 0.35s ease, box-shadow 0.35s ease;
+  align-items: center;
+  color: #6d5c49;
 }
 
-.switch-text {
-  z-index: 2;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  transition: color 0.35s ease, opacity 0.35s ease;
+.site-footer strong {
+  display: block;
+  color: #241c13;
+  margin-bottom: 4px;
 }
 
-.switch-text-off {
-  color: rgba(255, 255, 255, 0.9);
+.site-footer p {
+  margin: 0;
 }
 
-.switch-text-on {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.switch-thumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 38px;
-  height: calc(100% - 6px);
-  border-radius: 999px;
-  background: linear-gradient(135deg, #c0c0c055, #e0e0e0);
-  box-shadow:
-    0 0 18px rgba(192, 192, 192, 0.35),
-    0 0 10px rgba(255, 255, 255, 0.25) inset;
-  transition:
-    transform 0.35s cubic-bezier(0.37, 1.95, 0.66, 0.56),
-    background 0.35s ease,
-    box-shadow 0.35s ease;
-}
-
-.glass-switch input:checked + .switch-track {
-  background: rgba(24, 34, 56, 0.88);
-  box-shadow:
-    inset 0 1px 3px rgba(255, 255, 255, 0.08),
-    inset 0 -2px 6px rgba(0, 0, 0, 0.4),
-    0 0 18px rgba(102, 126, 234, 0.15);
-}
-
-.glass-switch input:checked + .switch-track .switch-thumb {
-  transform: translateX(35px);
-  background: linear-gradient(135deg, #d0e7ff55, #a0d8ff);
-  box-shadow:
-    0 0 18px rgba(160, 216, 255, 0.45),
-    0 0 10px rgba(200, 240, 255, 0.35) inset;
-}
-
-.glass-switch input:checked + .switch-track .switch-text-off {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-.glass-switch input:checked + .switch-track .switch-text-on {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-@media (max-width: 900px) {
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  .header-actions {
+@media (max-width: 960px) {
+  .site-header {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .glass-radio-group,
-  .glass-switch {
-    justify-content: center;
+  .site-nav {
+    justify-content: flex-start;
+  }
+
+  .particle-toggle {
+    justify-content: space-between;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 }
-
 </style>
